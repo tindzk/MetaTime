@@ -2,14 +2,24 @@ package pl.metastack.metatime
 
 import minitest.SimpleTestSuite
 
-import scala.collection.mutable.ArrayBuffer
+object SchedulerTest extends SimpleTestSuite with TestIgnored {
+  import Implicits._
 
-object SchedulerTest extends SimpleTestSuite {
-  test("at()") {
+  testIgnored("at()") {
+    val task = Scheduler.at(DateTime.now() + 5.seconds) {
+      ???
+    }
 
+    task.cancel()
+
+    val task2 = Scheduler.at(5.minutes.fromNow) {
+      ???
+    }
   }
 
-  test("every()") {
-
+  testIgnored("every()") {
+    val task = Scheduler.every(5.minutes) { case t =>
+      t.cancel()
+    }
   }
 }

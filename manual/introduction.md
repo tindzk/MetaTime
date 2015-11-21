@@ -1,6 +1,6 @@
 [package value="pl.metastack.metatime.manual"]
 # Introduction
-MetaTime is a time formatting library for Scala and Scala.js.
+MetaTime is a type-safe library for working with times and dates in Scala and Scala.js.
 
 ## Installation
 Add the following dependencies to your build configuration:
@@ -14,5 +14,10 @@ libraryDependencies += "pl.metastack" %%% "metatime" % "%version%"  // Scala.js
 [scala type="section" value="introduction" file="Examples"]
 
 ## Features
+* Type-safe DSL
+* Scheduler
+* Date/time formatting
+* Duration
+* Timezones
 * Scala.js support
 
