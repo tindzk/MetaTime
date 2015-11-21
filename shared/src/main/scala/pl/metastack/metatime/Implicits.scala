@@ -3,7 +3,9 @@ package pl.metastack.metatime
 object Implicits {
   implicit class IntExtensions(value: Int) {
     def year: Year = Year(value)
+    def years: Year = Year(value)
     def day: Day = Day(value)
+    def days: Day = Day(value)
     def hour: Hour = Hour(value)
     def hours: Hour = Hour(value)
     def minute: Minute = Minute(value)
