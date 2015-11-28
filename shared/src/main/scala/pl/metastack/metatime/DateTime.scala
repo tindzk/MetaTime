@@ -5,8 +5,8 @@ trait DateTime {
   def format: String = ???
   def format(fmt: String): String = ???
   def timestamp: Timestamp = ???
-  def -(time: Time): DateTime = ???
-  def +(time: Time): DateTime = ???
+  def -(time: Component): DateTime = ???
+  def +(time: Component): DateTime = ???
   def -(dateTime: DateTime): DateTime = ???
   def +(dateTime: DateTime): DateTime = ???
   def fromNow: Offset[DateTime] = ???
