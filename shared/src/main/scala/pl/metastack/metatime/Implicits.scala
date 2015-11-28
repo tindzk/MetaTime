@@ -6,6 +6,7 @@ object Implicits {
     def years: Year = Year(value)
     def day: Day = Day(value)
     def days: Day = Day(value)
+    def week: Day = Day(7)
     def hour: Hour = Hour(value)
     def hours: Hour = Hour(value)
     def minute: Minute = Minute(value)

@@ -13,8 +13,8 @@ case class Days(days: Int, hours: Int = 0) {
   def truncate: Day = Day(days)
 }
 
-trait DateComponent {
-  def date: Date = ???
+trait DateComponent extends Component {
+  override def date: Date = ???
 }
 
 trait Date {

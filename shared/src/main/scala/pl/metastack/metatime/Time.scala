@@ -12,6 +12,8 @@ trait Component extends Ordered[Component] {
 
   def fromNow: Offset[Time] = ???
 
+  def to(until: Component): Range = ???
+
   override def compare(that: Component): Int = ???
 }
 

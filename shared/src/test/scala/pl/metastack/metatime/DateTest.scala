@@ -42,4 +42,15 @@ object DateTest extends SimpleTestSuite with TestIgnored {
     val dateTimeOffset = DateTime(2015, 1, 1).fromNow
     assertEquals(dateTimeOffset.format, s"${???} days from now")
   }
+
+  testIgnored("Custom formatter") {
+    val formatter = Formatter.branch(Seq(
+      (0.seconds to 1.minute) -> Formatter.JustNow,
+      (1.minute to 1.hour) -> Formatter.Ago(Formatter.Minutes),
+      (1.hour to 1.day) -> Formatter.Ago(Formatter.Hours),
+      (1.day to 1.week) -> Formatter.Ago(Formatter.Days)),
+      Formatter.DateTime("%monthShort% %dayShort%, %yearLong% %hour%:%minute% %amPm%"))
+
+    assertEquals(formatter.format(DateTime.now()), "just now")
+  }
 }
