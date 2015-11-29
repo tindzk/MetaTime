@@ -24,7 +24,7 @@ trait Component extends Ordered[Component] {
 trait Hour extends Period with Component {
   val h: Int
 
-  override def unix(): Unix = ???
+  def unix(): Unix = Unix(h * 60 * 60 * 1000)
 
   override def equals(that: Any): Boolean =
     that match {
@@ -42,7 +42,7 @@ object Hour {
 trait Minute extends Period with Component {
   val m: Int
 
-  override def unix(): Unix = ???
+  override def unix(): Unix = Unix(m * 60 * 1000)
 
   override def equals(that: Any): Boolean =
     that match {
@@ -60,7 +60,7 @@ object Minute {
 trait Second extends Period with Component {
   val s: Int
 
-  override def unix(): Unix = ???
+  override def unix(): Unix = Unix(s * 1000)
 
   override def equals(that: Any): Boolean =
     that match {
@@ -78,7 +78,7 @@ object Second {
 trait Millisecond extends Period with Component {
   val ms: Int
 
-  override def unix(): Unix = ???
+  override def unix(): Unix = Unix(ms)
 
   override def equals(that: Any): Boolean =
     that match {
@@ -94,7 +94,13 @@ object Millisecond {
     }
 }
 
-trait Time extends Hour with Minute with Second with Millisecond
+trait Time extends Hour with Minute with Second with Millisecond {
+  override def unix(): Unix = Unix(
+  	Hour(h).unix().value + 
+    Minute(m).unix().value +
+    Second(s).unix().value + 
+    Millisecond(ms).unix().value)
+}
 
 object Time {
   def apply(hour: Int = 0,
@@ -108,5 +114,13 @@ object Time {
   }
 
   /** Current time */
-  def now(): Time = ???
+  def now() : Time = {
+    val currTimeInMilliSec : Long = System.currentTimeMillis()
+    new Time {
+      override val h: Int = (((currTimeInMilliSec / 1000) / 3600) % 24).toInt
+      override val m: Int = (((currTimeInMilliSec / 1000) / 60) % 60).toInt
+      override val s: Int = ((currTimeInMilliSec / 1000) % 60).toInt
+      override val ms: Int = (currTimeInMilliSec % 1000).toInt
+    }
+  }
 }
