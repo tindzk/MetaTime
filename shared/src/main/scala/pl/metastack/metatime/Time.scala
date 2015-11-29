@@ -1,7 +1,5 @@
 package pl.metastack.metatime
 
-import java.util.Calendar;
-
 trait Component extends Ordered[Component] {
   def -(time: Component): Component = ???
   def +(time: Component): Component = ???
@@ -147,7 +145,7 @@ object Time {
 
   /** Current time */
       def now() : Time = {
-               val now  = Calendar.getInstance().getTime
+               val now  = new java.util.Date //TODO: replace java.util.Date with java.util.Calendar to remove deprecated warnings
                new Time{
                  override val h: Int = now.getHours
                  override val m: Int = now.getMinutes
