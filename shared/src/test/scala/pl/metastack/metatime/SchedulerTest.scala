@@ -17,9 +17,17 @@ object SchedulerTest extends SimpleTestSuite with TestIgnored {
     }
   }
 
+  testIgnored("in()") {
+    val task = Scheduler.in(5.minutes) {
+      ???
+    }
+  }
+
   testIgnored("every()") {
+    var counter = 0
     val task = Scheduler.every(5.minutes) { case t =>
-      t.cancel()
+      if (counter > 2) t.cancel()
+      counter += 1
     }
   }
 }

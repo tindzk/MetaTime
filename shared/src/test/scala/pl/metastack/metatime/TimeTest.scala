@@ -14,13 +14,14 @@ object TimeTest extends SimpleTestSuite with TestIgnored {
   }
 
   testIgnored("hour") {
-    assertEquals(Hour(25).days, Days(1, 1))
+    assertEquals(Hour(25).days, Day(1 + 1.0 / 24))
     assertEquals(Hour(25).days.truncate, Day(1))
   }
 
   testIgnored("operators") {
     assertEquals(Time(23, 10) > Time(22, 0), true)
     assertEquals(Time(23, 10) > Hour(22), true)
+    assertEquals(5.hours - 1.minute, 4.hours + 59.minutes)
   }
 
   testIgnored("now") {

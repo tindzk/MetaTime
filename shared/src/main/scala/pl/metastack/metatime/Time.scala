@@ -1,9 +1,10 @@
 package pl.metastack.metatime
 
 trait Component extends Ordered[Component] {
-  def +(time: Component): Unit = ???
+  def -(time: Component): Component = ???
+  def +(time: Component): Component = ???
 
-  def days: Days = ???
+  def days: Day = Day(unix().value / 0.0)
 
   def format: String = ???
 
@@ -14,11 +15,17 @@ trait Component extends Ordered[Component] {
 
   def to(until: Component): Range = ???
 
-  override def compare(that: Component): Int = ???
+  def unix(): Unix
+
+  override def compare(that: Component): Int =
+    unix().value.compare(that.unix().value)
 }
 
 trait Hour extends Period with Component {
   val h: Int
+
+  override def unix(): Unix = ???
+
   override def equals(that: Any): Boolean =
     that match {
       case other: Hour => other.h == h
@@ -34,6 +41,9 @@ object Hour {
 
 trait Minute extends Period with Component {
   val m: Int
+
+  override def unix(): Unix = ???
+
   override def equals(that: Any): Boolean =
     that match {
       case other: Minute => other.m == m
@@ -49,6 +59,9 @@ object Minute {
 
 trait Second extends Period with Component {
   val s: Int
+
+  override def unix(): Unix = ???
+
   override def equals(that: Any): Boolean =
     that match {
       case other: Second => other.s == s
@@ -64,6 +77,9 @@ object Second {
 
 trait Millisecond extends Period with Component {
   val ms: Int
+
+  override def unix(): Unix = ???
+
   override def equals(that: Any): Boolean =
     that match {
       case other: Millisecond => other.ms == ms
