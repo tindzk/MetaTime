@@ -18,13 +18,13 @@ object TimeTest extends SimpleTestSuite with TestIgnored {
     assertEquals(Hour(25).days.truncate, Day(1))
   }
 
-  testIgnored("operators") {
-    assertEquals(Time(23, 10) > Time(22, 0), true)
-    assertEquals(Time(23, 10) > Hour(22), true)
+  test("operators") {
+    assertEquals(Time(20, 10) < Time(22, 0), true)
+    assertEquals(Time(14, 10) < Hour(22), true)
   }
 
-  testIgnored("now") {
-    assertEquals(Time.now(), ???)
+  test("now") {
+    assertEquals(Time(0,0,0,0) < Time.now(), true)
   }
 
   testIgnored("locale") {
