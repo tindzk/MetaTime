@@ -18,72 +18,44 @@ trait Component extends Ordered[Component] {
   override def compare(that: Component): Int =
     this.unix().value compare that.unix().value
 	
-  
-  val timeComponents = List ("Millisecond", "Second", "Minute", "Hour", "Time")
-  val dateComponents = List("Date", "DateTime")
-  
-  def stripClassName(name : String) : String = {
-    var temp = name.split('$')(0).split(' ')(1)
-    temp.substring(temp.lastIndexOf(".")+1)
+  def getConstructionType(other: Component) : Component = { 
+    other match {
+      case _: Time | _: Hour | _: Minute | _: Second | _: Millisecond => Time()
+    }
   }
  
-  def operationResultType(other: Component) : String = { 
-    val thisClass = stripClassName(this.getClass.toString())
-    val otherClass = stripClassName(other.getClass.toString())
-    if (thisClass.equals(otherClass))
-      timeComponents(4)
-    else if (dateComponents.contains(thisClass) || dateComponents.contains(otherClass))
-      dateComponents(1)
-    else if (timeComponents.contains(thisClass) && timeComponents.contains(otherClass))
-      timeComponents(4)
-    else
-      null
+  def operationResultType(other: Component) : Component = {
+      var thisComp = getConstructionType(this)
+      var thatComp = getConstructionType(other)
+      thisComp match { 
+        case _: Time => thatComp match {
+          case _: Time => Time() 
+        }
+      }
   }
-  
-  def getTimeObject(comp : Component) : Time = {
-    val compClassName = stripClassName(comp.getClass.toString())
-    if(compClassName.equals(timeComponents(3)))
-      Time(hour = comp.asInstanceOf[Hour].h)
-    else if(compClassName.equals(timeComponents(2)))
-      Time(minute = comp.asInstanceOf[Minute].m)
-    else if(compClassName.equals(timeComponents(1)))
-      Time(second = comp.asInstanceOf[Second].s)
-    else if(compClassName.equals(timeComponents(0)))
-      Time(millisecond = comp.asInstanceOf[Millisecond].ms)
-    else if(compClassName.equals(timeComponents(4)))
-      Time(hour = comp.asInstanceOf[Hour].h, 
-          minute = comp.asInstanceOf[Minute].m, 
-          second = comp.asInstanceOf[Second].s, 
-          millisecond = comp.asInstanceOf[Millisecond].ms
-          )
-    else
-      null
-  }
-  def +(other: Component): Component = {
+
+  def +(other: Component): Component = { 
     operationResultType(other) match {
-      case "Time" => 
-        val thisTime : Time =  getTimeObject(this)
-        val thatTime : Time =  getTimeObject(other)
-        val resultTime : Time =  Time(thisTime.h + thatTime.h, 
-            thisTime.m + thatTime.m, thisTime.s + thatTime.s, 
-            thisTime.ms + thatTime.ms
-            )
+      case _: Time => 
+        val thisTime =  Time(this)
+        val thatTime =  Time(other)
+        val resultTime =  Time(thisTime.h + thatTime.h, 
+          thisTime.m + thatTime.m, thisTime.s + thatTime.s, 
+          thisTime.ms + thatTime.ms
+          )
         resultTime
-      case _ => null
     }
   }
   
   def -(other: Component): Component = {
     operationResultType(other) match {
-      case "Time" => 
-        val thisTime : Time =  getTimeObject(this)
-        val thatTime : Time =  getTimeObject(other)
-        val resultTime : Time =  Time(thisTime.h - thatTime.h, 
-            thisTime.m - thatTime.m, thisTime.s - thatTime.s, 
-            thisTime.ms - thatTime.ms
-            )
+      case _: Time => 
+        val thisTime =  Time(this)
+        val thatTime =  Time(other)
+        val resultTime =  Time(thisTime.h - thatTime.h, 
+          thisTime.m - thatTime.m, thisTime.s - thatTime.s, 
+          thisTime.ms - thatTime.ms)
         resultTime
-      case _ => null
     }
   }
 }
@@ -91,7 +63,7 @@ trait Component extends Ordered[Component] {
 trait Hour extends Period with Component {
   val h: Int
 
-  def unix(): Unix = Unix( h * 60 * 60 * 1000 )
+  def unix(): Unix = Unix(h * 60 * 60 * 1000)
 
   override def equals(that: Any): Boolean =
     that match {
@@ -184,21 +156,28 @@ object Time {
     override val ms: Int = millisecond
   }
 
-  def apply(time: Time) : Time = new Time {
-    override val h : Int = time.h
-    override val m : Int = time.m
-    override val s : Int = time.s
-    override val ms : Int = time.ms
-  } 
+  def apply(comp : Component) : Time = {
+    comp match {
+      case _: Time => 
+        Time(hour = comp.asInstanceOf[Time].h, 
+            minute = comp.asInstanceOf[Time].m, 
+            second = comp.asInstanceOf[Time].s, 
+            millisecond = comp.asInstanceOf[Time].ms)
+      case _: Hour => Time(hour = comp.asInstanceOf[Hour].h)
+      case _: Minute => Time(minute = comp.asInstanceOf[Minute].m)
+      case _: Second => Time(second = comp.asInstanceOf[Second].s)
+      case _: Millisecond => Time(millisecond = comp.asInstanceOf[Millisecond].ms)
+    }
+  }
 
   /** Current time */
   def now() : Time = {
-               val currTimeInMilliSec : Long =   System.currentTimeMillis()
-               new Time{
-                 override val h: Int = (((currTimeInMilliSec/ 1000) / 3600 ) % 24).toInt
-                 override val m: Int = (((currTimeInMilliSec/1000) / 60) % 60).toInt
-                 override val s: Int = ((currTimeInMilliSec/1000) % 60).toInt
-                 override val ms: Int = (currTimeInMilliSec/1000).toInt
-               }
+    val currTimeInMilliSec : Long = System.currentTimeMillis()
+    new Time {
+      override val h: Int = (((currTimeInMilliSec/ 1000) / 3600) % 24).toInt
+      override val m: Int = (((currTimeInMilliSec/1000) / 60) % 60).toInt
+      override val s: Int = ((currTimeInMilliSec/1000) % 60).toInt
+      override val ms: Int = (currTimeInMilliSec/1000).toInt
     }
+  }
 }
