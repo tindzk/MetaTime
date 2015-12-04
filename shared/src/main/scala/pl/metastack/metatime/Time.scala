@@ -16,7 +16,7 @@ trait Component extends Ordered[Component] {
   def unix(): Unix
 
   override def compare(that: Component): Int =
-    this.unix().value compare that.unix().value
+    this.unix().value.compare(that.unix().value)
 	
   def getConstructionType(other: Component) : Component = { 
     other match {
@@ -63,7 +63,7 @@ trait Component extends Ordered[Component] {
 trait Hour extends Period with Component {
   val h: Int
 
-  def unix(): Unix = Unix(h * 60 * 60 * 1000)
+  override def unix(): Unix = Unix(h * 60 * 60 * 1000)
 
   override def equals(that: Any): Boolean =
     that match {
