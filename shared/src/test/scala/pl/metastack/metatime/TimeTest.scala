@@ -24,8 +24,8 @@ object TimeTest extends SimpleTestSuite with TestIgnored {
     assertEquals(5.hours - 1.minute, 4.hours + 59.minutes)
   }
 
-  testIgnored("now") {
-    assertEquals(Time.now(), ???)
+  test("now") {
+    assertEquals(Time(0,0,0,0) < Time.now(), true)
   }
 
   testIgnored("locale") {

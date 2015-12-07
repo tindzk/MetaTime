@@ -31,6 +31,13 @@ trait Hour extends Period with Component {
       case other: Hour => other.h == h
       case _ => false
     }
+	
+  def <(that: Hour): Boolean = {
+    if (!that.isInstanceOf[Hour])
+      error("cannot compare " + that + " and an hour")
+    val other = that.asInstanceOf[Hour]
+    (h < other.h) 
+  }
 }
 
 object Hour {
@@ -49,6 +56,13 @@ trait Minute extends Period with Component {
       case other: Minute => other.m == m
       case _ => false
     }
+	
+    def <(that: Minute): Boolean = {
+		if (!that.isInstanceOf[Minute])
+			error("cannot compare " + that + " and a minute")
+		val other = that.asInstanceOf[Minute]
+		(m < other.m) 
+	}
 }
 
 object Minute {
@@ -67,6 +81,13 @@ trait Second extends Period with Component {
       case other: Second => other.s == s
       case _ => false
     }
+
+  def <(that: Second): Boolean = {
+	if (!that.isInstanceOf[Second])
+		error("cannot compare " + that + " and a Second")
+	val other = that.asInstanceOf[Second]
+	(s < other.s) 
+  }
 }
 
 object Second {
@@ -85,6 +106,13 @@ trait Millisecond extends Period with Component {
       case other: Millisecond => other.ms == ms
       case _ => false
     }
+	
+  def <(that: Millisecond): Boolean = {
+    if (!that.isInstanceOf[Millisecond])
+      error("cannot compare " + that + " and a Millisecond")
+    val other = that.asInstanceOf[Millisecond]
+    (ms < other.ms) 
+  }
 }
 
 object Millisecond {
@@ -95,6 +123,14 @@ object Millisecond {
 }
 
 trait Time extends Hour with Minute with Second with Millisecond
+{
+  def <(that : Time) : Boolean = {
+    (h < that.h) ||
+    (h == that.h && (m < that.m ||
+                     (m == that.m && s < that.s) ||
+                       (s == that.s && ms < that.ms)))
+  }
+}
 
 object Time {
   def apply(hour: Int = 0,
@@ -108,5 +144,13 @@ object Time {
   }
 
   /** Current time */
-  def now(): Time = ???
+      def now() : Time = {
+               val now  = new java.util.Date //TODO: replace java.util.Date with java.util.Calendar to remove deprecated warnings
+               new Time{
+                 override val h: Int = now.getHours
+                 override val m: Int = now.getMinutes
+                 override val s: Int = now.getSeconds
+                 override val ms: Int = 0
+              } 
+    }
 }
