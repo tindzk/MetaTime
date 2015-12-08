@@ -96,7 +96,7 @@ object Millisecond {
 
 trait Time extends Hour with Minute with Second with Millisecond {
   override def unix(): Unix = Unix(
-  	Hour(h).unix().value + 
+    Hour(h).unix().value + 
     Minute(m).unix().value +
     Second(s).unix().value + 
     Millisecond(ms).unix().value)
@@ -115,7 +115,7 @@ object Time {
 
   /** Current time */
   def now() : Time = {
-    val currTimeInMilliSec : Long = System.currentTimeMillis()
+    val currTimeInMilliSec: Long = System.currentTimeMillis()
     new Time {
       override val h: Int = (((currTimeInMilliSec / 1000) / 3600) % 24).toInt
       override val m: Int = (((currTimeInMilliSec / 1000) / 60) % 60).toInt
