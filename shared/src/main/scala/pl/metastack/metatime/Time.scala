@@ -24,7 +24,7 @@ trait Component extends Ordered[Component] {
 trait Hour extends Period with Component {
   val h: Int
 
-  def unix(): Unix = Unix(h * 60 * 60 * 1000)
+  override def unix(): Unix = Unix(h * 60 * 60 * 1000)
 
   override def equals(that: Any): Boolean =
     that match {
@@ -114,7 +114,7 @@ object Time {
   }
 
   /** Current time */
-  def now() : Time = {
+  def now(): Time = {
     val currTimeInMilliSec: Long = System.currentTimeMillis()
     new Time {
       override val h: Int = (((currTimeInMilliSec / 1000) / 3600) % 24).toInt
