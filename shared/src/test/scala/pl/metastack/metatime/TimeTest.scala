@@ -36,7 +36,7 @@ object TimeTest extends SimpleTestSuite with TestIgnored {
     assertEquals((Time(Hour(50) - Minute(100))).equals(Time(hour=48, minute = 20)), true)
   }
 
-  test("now") {
+  testIgnored("now") {
     val timeBefore = Time.now()
     //Add Delay
     val timeAfter = Time.now()
