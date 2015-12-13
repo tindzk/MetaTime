@@ -1,59 +1,61 @@
 package pl.metastack.metatime
 
-import minitest.SimpleTestSuite
+import org.scalatest.FunSuite
 
-object DateTest extends SimpleTestSuite with TestIgnored {
+class DateTest extends FunSuite {
   import Implicits._
 
-  testIgnored("construct") {
+  ignore("construct") {
     val date = Date(2015, 12, 5)
-    assertEquals(date, ???)
+    assert(date == ???)
   }
 
   test("implicits") {
-    assertEquals(Year(2015), 2015.year)
+    assert(Year(2015) == 2015.year)
   }
 
   test("dayUnix") {
-    assertEquals(Day(1 + 1.0 / 24).unix().value, 90000000)
-  }
-  testIgnored("date") {
-    assertEquals(Year(2015).date, Date(2015, 1, 1))
+    assert(Day(1 + 1.0 / 24).unix().value == 90000000)
   }
 
-  testIgnored("add") {
-    assertEquals(Date(2015) + 1.day, ???)
+  ignore("date") {
+    assert(Year(2015).date == Date(2015, 1, 1))
   }
 
-  testIgnored("until") {
-    assertEquals(Year(2015) until Year(2016), ???)
+  ignore("add") {
+    assert(Date(2015) + 1.day == ???)
   }
 
-  testIgnored("now") {
+  ignore("until") {
+    assert((Year(2015) until Year(2016)) == ???)
+  }
+
+  ignore("now") {
     /** Current time */
-    assertEquals(DateTime.now(), ???)
+    assert(DateTime.now() == ???)
 
     /** Unix timestamp */
-    assertEquals(DateTime.now().timestamp, ???)
+    assert(DateTime.now().timestamp == ???)
   }
 
-  testIgnored("format") {
+  ignore("format") {
     val dateTime = DateTime(2015, 1, 1)
-    assertEquals(dateTime.format, ???)
-    assertEquals(dateTime.format("MMM d, yyyy"), ???)
+    assert(dateTime.format == ???)
+    assert(dateTime.format("MMM d, yyyy") == ???)
 
     val dateTimeOffset = DateTime(2015, 1, 1).fromNow
-    assertEquals(dateTimeOffset.format, s"${???} days from now")
+    assert(dateTimeOffset.format == s"${???} days from now")
   }
 
-  testIgnored("Custom formatter") {
+  ignore("Custom formatter") {
     val formatter = Formatter.branch(Seq(
       (0.seconds to 1.minute) -> Formatter.JustNow,
       (1.minute to 1.hour) -> Formatter.Ago(Formatter.Minutes),
       (1.hour to 1.day) -> Formatter.Ago(Formatter.Hours),
       (1.day to 1.week) -> Formatter.Ago(Formatter.Days)),
-      Formatter.DateTime("%monthShort% %dayShort%, %yearLong% %hour%:%minute% %amPm%"))
+      Formatter.DateTime(
+        "%monthShort% %dayShort%, %yearLong% %hour%:%minute% %amPm%"))
 
-    assertEquals(formatter.format(DateTime.now()), "just now")
+    assert(formatter.format(DateTime.now()) == "just now")
   }
 }

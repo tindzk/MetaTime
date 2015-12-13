@@ -6,6 +6,11 @@ import sbtbuildinfo.BuildInfoPlugin
 import sbtbuildinfo.BuildInfoPlugin.autoImport._
 
 object Build extends sbt.Build {
+  object Dependencies {
+    val ScalaTest = "3.0.0-M14"
+    val MetaDocs  = "0.1.1-SNAPSHOT"
+  }
+
   val SharedSettings = Seq(
     name := "MetaTime",
     organization := "pl.metastack",
@@ -45,18 +50,20 @@ object Build extends sbt.Build {
           </developer>
         </developers>,
 
-      testFrameworks += new TestFramework("minitest.runner.Framework"),
       autoAPIMappings := true,
-      apiMappings += (scalaInstance.value.libraryJar -> url(s"http://www.scala-lang.org/api/${scalaVersion.value}/"))
+      apiMappings +=
+        (scalaInstance.value.libraryJar -> url(s"http://www.scala-lang.org/api/${scalaVersion.value}/"))
     )
     .jsSettings(
-      libraryDependencies += "org.monifu" %%% "minitest" % "0.13" % "test",
+      libraryDependencies +=
+        "org.scalatest" %%% "scalatest" % Dependencies.ScalaTest % "test",
 
       /* Use io.js for faster compilation of test cases */
       scalaJSStage in Global := FastOptStage
     )
     .jvmSettings(
-      libraryDependencies += "org.monifu" %% "minitest" % "0.13" % "test"
+      libraryDependencies +=
+        "org.scalatest" %% "scalatest" % Dependencies.ScalaTest % "test"
     )
 
   lazy val js = metaTime.js
@@ -69,7 +76,7 @@ object Build extends sbt.Build {
     .settings(
       publishArtifact := false,
       libraryDependencies ++= Seq(
-        "pl.metastack" %% "metadocs" % "0.1.1-SNAPSHOT",
+        "pl.metastack" %% "metadocs" % Dependencies.MetaDocs,
         "org.eclipse.jgit" % "org.eclipse.jgit" % "4.1.1.201511131810-r"),
       buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
       buildInfoPackage := "pl.metastack.metatime",

@@ -1,10 +1,10 @@
 package pl.metastack.metatime
 
-import minitest.SimpleTestSuite
+import org.scalatest.FunSuite
 
-object LocaleTest extends SimpleTestSuite with TestIgnored {
-  testIgnored("construct") {
-    assertEquals(Locale("en_GB"), Locale.English.GreatBritain)
-    assertEquals(Locale("pl_PL"), Locale.Polish)
+class LocaleTest extends FunSuite {
+  ignore("construct") {
+    assert(Locale("en_GB") == Locale.English.GreatBritain)
+    assert(Locale("pl_PL") == Locale.Polish)
   }
 }

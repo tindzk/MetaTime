@@ -1,53 +1,53 @@
 package pl.metastack.metatime
 
-import minitest.SimpleTestSuite
+import org.scalatest.FunSuite
 
-object TimeTest extends SimpleTestSuite with TestIgnored {
+class TimeTest extends FunSuite {
   import Implicits._
 
-  testIgnored("construct") {
-    assertEquals(Time(23, 10), ???)
+  ignore("construct") {
+    assert(Time(23, 10) == ???)
   }
 
   test("implicits") {
-    assertEquals(Hour(23), 23.hour)
+    assert(Hour(23) == 23.hour)
   }
 
-  testIgnored("hour") {
-    assertEquals(Hour(25).days, Day(1 + 1.0 / 24))
+  ignore("hour") {
+    assert(Hour(25).days == Day(1 + 1.0 / 24))
   }
 
   test("operators") {
-    assertEquals(Time(23, 10) > Time(22, 0), true)
-    assertEquals(Time(23, 10) > Hour(22), true)
-    assertEquals(Hour(2) > Minute(80), true)
+    assert(Time(23, 10) > Time(22, 0))
+    assert(Time(23, 10) > Hour(22))
+    assert(Hour(2) > Minute(80))
   }
 
   test("plusTime") {
-    assertEquals((Time(Hour(30) + Hour(20))).equals(Time(hour=50)), true)
-    assertEquals((Time(Minute(20) + Second(40))).equals(Time(hour=10, minute=20)), false)
-    assertEquals((Time(Hour(2) + Minute(60))).equals(Time(hour=3)), true)
+    assert((Time(Hour(30) + Hour(20))) == Time(hour = 50))
+    assert((Time(Minute(20) + Second(40))) != Time(hour = 10, minute = 20))
+    assert((Time(Hour(2) + Minute(60))) == Time(hour = 3))
   }
 
   test("minusTime") {
-    assertEquals((Time(Minute(50) - Minute(10))).equals(Time(minute=40)), true)
-    assertEquals((Time(Second(1) - Millisecond(100))).equals(Time(milliseconds=900)), true)
-    assertEquals((Time(Hour(50) - Minute(100))).equals(Time(hour=48, minute = 20)), true)
+    assert((Time(Minute(50) - Minute(10))) == Time(minute = 40))
+    assert((Time(Second(1) - Millisecond(100))) == Time(milliseconds = 900))
+    assert((Time(Hour(50) - Minute(100))) == Time(hour = 48, minute = 20))
   }
 
-  testIgnored("now") {
+  ignore("now") {
     val timeBefore = Time.now()
-    //Add Delay
+    // Add Delay
     val timeAfter = Time.now()
-    assertEquals((timeBefore - timeAfter) >= Time(milliseconds=1000), true)
+    assert((timeBefore - timeAfter) >= Time(milliseconds=1000))
   }
 
-  testIgnored("locale") {
+  ignore("locale") {
     implicit val locale = Locale.English.America
-    assertEquals(Time(23).format, "11 pm")
+    assert(Time(23).format == "11 pm")
   }
 
-  testIgnored("fromNow") {
-    assertEquals(Minute(5).fromNow, ???)
+  ignore("fromNow") {
+    assert(Minute(5).fromNow == ???)
   }
 }
