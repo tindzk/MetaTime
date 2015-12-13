@@ -14,6 +14,9 @@ object DateTest extends SimpleTestSuite with TestIgnored {
     assertEquals(Year(2015), 2015.year)
   }
 
+  test("dayUnix") {
+    assertEquals(Day(1 + 1.0 / 24).unix().value, 90000000)
+  }
   testIgnored("date") {
     assertEquals(Year(2015).date, Date(2015, 1, 1))
   }

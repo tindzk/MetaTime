@@ -155,15 +155,15 @@ object Time {
 
   def apply(comp : Component) : Time = {
     comp match {
-      case _: Time =>
-        Time(hour = comp.asInstanceOf[Time].h,
-        minute = comp.asInstanceOf[Time].m,
-        second = comp.asInstanceOf[Time].s,
-        millisecond = comp.asInstanceOf[Time].ms)
-      case _: Hour => Time(hour= comp.asInstanceOf[Hour].h)
-      case _: Minute => Time(minute = comp.asInstanceOf[Minute].m)
-      case _: Second => Time(second = comp.asInstanceOf[Second].s)
-      case _: Millisecond => Time(millisecond = comp.asInstanceOf[Millisecond].ms)
+      case t: Time =>
+        Time(hour = t.h,
+        minute = t.m,
+        second = t.s,
+        millisecond = t.ms)
+      case h: Hour => Time(hour= h.h)
+      case m: Minute => Time(minute = m.m)
+      case s: Second => Time(second = s.s)
+      case ms: Millisecond => Time(millisecond = ms.ms)
     }
   }
 

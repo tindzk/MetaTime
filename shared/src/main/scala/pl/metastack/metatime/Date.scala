@@ -39,7 +39,7 @@ object Month {
 trait Day extends DateComponent {
   val d: Double
 
-  override def unix(): Unix = Unix(Hour(24).unix().value * d.toLong)
+  override def unix(): Unix = Unix((Hour(24).unix().value * d).toLong)
 
   override def equals(that: Any): Boolean =
     that match {
