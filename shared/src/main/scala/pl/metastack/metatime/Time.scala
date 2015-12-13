@@ -2,7 +2,7 @@ package pl.metastack.metatime
 
 trait Component extends Ordered[Component] {
 
-  def days: Day = Day((unix().value / 0.0))
+  def days: Day = Day(unix().value / 0.0)
 
   def format: String = ???
 
