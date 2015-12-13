@@ -2,7 +2,7 @@ package pl.metastack.metatime
 
 trait Component extends Ordered[Component] {
 
-  def days: Day = Day((unix().value / 0.0).toInt)
+  def days: Day = Day((unix().value / 0.0))
 
   def format: String = ???
 
@@ -39,8 +39,7 @@ trait Component extends Ordered[Component] {
       case _: Time =>
         val thisTime =  Time(this)
         val thatTime =  Time(other)
-        Time(milliseconds = ((unix().value) + (other.unix().value))
-        )
+        Time(milliseconds = ((unix().value) + (other.unix().value)))
     }
   }
 
@@ -49,8 +48,7 @@ trait Component extends Ordered[Component] {
       case _: Time =>
         val thisTime =  Time(this)
         val thatTime =  Time(other)
-        Time(milliseconds = ((unix().value) - (other.unix().value))
-        )
+        Time(milliseconds = ((unix().value) - (other.unix().value)))
     }
   }
 }

@@ -37,9 +37,9 @@ object Month {
 }
 
 trait Day extends DateComponent {
-  val d: Int
+  val d: Double
 
-  override def unix(): Unix = Unix(Hour(24).unix().value * d)
+  override def unix(): Unix = Unix(Hour(24).unix().value * d.toLong)
 
   override def equals(that: Any): Boolean =
     that match {
@@ -51,7 +51,7 @@ trait Day extends DateComponent {
 }
 
 object Day {
-  def apply(value: Int): Day = new Day {
+  def apply(value: Double): Day = new Day {
     override val d = value
   }
 }
@@ -88,6 +88,6 @@ object Date {
     day: Int = 1): Date = new Date {
       override val y: Int = year
       override val m: Int = month
-      override val d: Int = day
+      override val d: Double = day
   }
 }

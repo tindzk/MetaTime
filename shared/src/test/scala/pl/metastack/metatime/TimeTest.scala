@@ -14,8 +14,7 @@ object TimeTest extends SimpleTestSuite with TestIgnored {
   }
 
   testIgnored("hour") {
-    assertEquals(Hour(25).days, Day(1 + 1 / 24))
-    assertEquals(Hour(25).days.truncate, Day(1))
+    assertEquals(Hour(25).days, Day(1 + 1.0 / 24))
   }
 
   test("operators") {
@@ -40,7 +39,7 @@ object TimeTest extends SimpleTestSuite with TestIgnored {
     val timeBefore = Time.now()
     //Add Delay
     val timeAfter = Time.now()
-    assertEquals((timeBefore - timeAfter) <= Time(milliseconds=1000), true)
+    assertEquals((timeBefore - timeAfter) >= Time(milliseconds=1000), true)
   }
 
   testIgnored("locale") {
