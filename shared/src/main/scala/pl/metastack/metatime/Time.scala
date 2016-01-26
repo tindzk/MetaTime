@@ -2,18 +2,19 @@ package pl.metastack.metatime
 
 trait Component extends Ordered[Component] {
 
+  def until(component: Component): Period = ???
+
   def days: Day = Day(unix().value / 0.0)
 
   def format: String = ???
-
-  def date: Date = ???
+  def date: Date = Date(this)
   def dateTime: DateTime = ???
-
-  def fromNow: Offset[Time] = ???
 
   def to(until: Component): Range = ???
 
   def unix(): Unix
+
+  def fromNow: Offset[Time] = ???
 
   override def compare(that: Component): Int =
     unix().value.compare(that.unix().value)
@@ -21,15 +22,19 @@ trait Component extends Ordered[Component] {
   def getConstructionType(other: Component) : Component = {
     other match {
       case _: Time | _: Hour | _: Minute | _: Second | _: Millisecond => Time()
+      case _: Date | _: Year | _: Month | _: Day => Date()
     }
   }
 
   def operationResultType(other: Component) : Component = {
-    var thisComp = getConstructionType(this)
-    var thatComp = getConstructionType(other)
+    val thisComp = getConstructionType(this)
+    val thatComp = getConstructionType(other)
     thisComp match {
       case _: Time => thatComp match {
         case _: Time => Time()
+      }
+      case _: Date => thatComp match {
+        case _: Date => Date()
       }
     }
   }
@@ -37,18 +42,40 @@ trait Component extends Ordered[Component] {
   def +(other: Component): Component = {
     operationResultType(other) match {
       case _: Time =>
-        val thisTime =  Time(this)
-        val thatTime =  Time(other)
         Time(milliseconds = ((unix().value) + (other.unix().value)))
+      case _: Date =>
+        Date(milliseconds = ((unix().value) + (other.unix().value)))
     }
   }
 
   def -(other: Component): Component = {
     operationResultType(other) match {
       case _: Time =>
-        val thisTime =  Time(this)
-        val thatTime =  Time(other)
         Time(milliseconds = ((unix().value) - (other.unix().value)))
+    }
+  }
+
+  val DaysInMonths = Seq(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+  val YearsSequence = Seq(365, 365, 366, 365)
+
+  def daysOfMonth(month: Int) : Int = {
+    val accumulatedDays = DaysInMonths.zipWithIndex.foldLeft(Seq.empty[Int]) {
+      case (Nil, (cur, _)) => Seq(cur)
+      case (acc, (cur, i)) => acc ++ Seq(acc.last + cur)
+    }
+    if(month <= 1) 0
+    else { accumulatedDays(month-1) }
+  }
+
+  def daysOfYear(y: Int) : Int = {
+    Stream.continually(YearsSequence).flatten.take(y - 1970).toList.sum
+  }
+
+  def daysOf(component: Component) : Int = {
+    component match {
+      case d: Date => (d.d).toInt + daysOfMonth(d.m) + daysOfYear(d.y)
+      case m: Month => daysOfMonth(m.m)
+      case y: Year => daysOfYear(y.y)
     }
   }
 }
@@ -56,6 +83,8 @@ trait Component extends Ordered[Component] {
 
 trait Hour extends Period with Component {
   val h: Int
+
+ // override def fromNow = HourOffset(h)
 
   override def unix(): Unix = Unix(h * Minute(60).unix().value)
 
