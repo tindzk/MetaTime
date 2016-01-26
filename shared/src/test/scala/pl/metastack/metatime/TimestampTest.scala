@@ -1,10 +1,10 @@
 package pl.metastack.metatime
 
-import minitest.SimpleTestSuite
+import org.scalatest.FunSuite
 
-object TimestampTest extends SimpleTestSuite with TestIgnored {
-  testIgnored("construct") {
-    assertEquals(Unix(???).date, ???)
-    assertEquals(Unix(???).dateTime, ???)
+class TimestampTest extends FunSuite {
+  ignore("construct") {
+    assert(Unix(???).date == ???)
+    assert(Unix(???).dateTime == ???)
   }
 }

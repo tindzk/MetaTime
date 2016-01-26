@@ -1,11 +1,11 @@
 package pl.metastack.metatime
 
-import minitest.SimpleTestSuite
+import org.scalatest.FunSuite
 
-object SchedulerTest extends SimpleTestSuite with TestIgnored {
+class SchedulerTest extends FunSuite {
   import Implicits._
 
-  testIgnored("at()") {
+  ignore("at()") {
     val task = Scheduler.at(DateTime.now() + 5.seconds) {
       ???
     }
@@ -17,13 +17,13 @@ object SchedulerTest extends SimpleTestSuite with TestIgnored {
     }
   }
 
-  testIgnored("in()") {
+  ignore("in()") {
     val task = Scheduler.in(5.minutes) {
       ???
     }
   }
 
-  testIgnored("every()") {
+  ignore("every()") {
     var counter = 0
     val task = Scheduler.every(5.minutes) { case t =>
       if (counter > 2) t.cancel()
