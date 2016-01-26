@@ -64,6 +64,13 @@ trait Hour extends Period with Component {
       case other: Hour => other.h == h
       case _ => false
     }
+	
+  def <(that: Hour): Boolean = {
+    if (!that.isInstanceOf[Hour])
+      error("cannot compare " + that + " and an hour")
+    val other = that.asInstanceOf[Hour]
+    (h < other.h) 
+  }
 }
 
 object Hour {
@@ -82,6 +89,13 @@ trait Minute extends Period with Component {
       case other: Minute => other.m == m
       case _ => false
     }
+	
+    def <(that: Minute): Boolean = {
+		if (!that.isInstanceOf[Minute])
+			error("cannot compare " + that + " and a minute")
+		val other = that.asInstanceOf[Minute]
+		(m < other.m) 
+	}
 }
 
 object Minute {
@@ -100,6 +114,13 @@ trait Second extends Period with Component {
       case other: Second => other.s == s
       case _ => false
     }
+
+  def <(that: Second): Boolean = {
+	if (!that.isInstanceOf[Second])
+		error("cannot compare " + that + " and a Second")
+	val other = that.asInstanceOf[Second]
+	(s < other.s) 
+  }
 }
 
 object Second {
@@ -118,6 +139,13 @@ trait Millisecond extends Period with Component {
       case other: Millisecond => other.ms == ms
       case _ => false
     }
+	
+  def <(that: Millisecond): Boolean = {
+    if (!that.isInstanceOf[Millisecond])
+      error("cannot compare " + that + " and a Millisecond")
+    val other = that.asInstanceOf[Millisecond]
+    (ms < other.ms) 
+  }
 }
 
 object Millisecond {
