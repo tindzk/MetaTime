@@ -1,10 +1,7 @@
 package pl.metastack.metatime
 
-import scala.concurrent.Future
-
 trait Task {
   def cancel(): Unit = ???
-  def toFuture: Future[Unit] = ???
 }
 
 object Scheduler {
