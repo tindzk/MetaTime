@@ -80,35 +80,28 @@ object Date {
   def apply(year: Int, month: Int): Date = ???
   def parse(format: String, timezone: Timezone): Date = ???
 
-  def findYearsOrRemainingDaysOfYear(totalDays: Int, year: Boolean) : Int = {
-    if(year) { yearsPassed(totalDays)}
-    else { daysPassed(totalDays) }
-  }
-
   val YearsSequence = Seq(365, 365, 366, 365)
 
-  def yearsPassed(totalDays: Int) : Int = {
+  def accumulateDays(totalDays: Int) : Seq[Int] = {
     val yearLength = Stream.continually(YearsSequence).flatten.take((totalDays / 365) + 1).toList
-    val accumulatedDays = yearLength.zipWithIndex.foldLeft(Seq.empty[Int]) {
+    yearLength.zipWithIndex.foldLeft(Seq.empty[Int]) {
       case (Nil, (cur, _)) => Seq(cur)
       case (acc, (cur, i)) => acc ++ Seq(acc.last + cur)
     }
-    accumulatedDays.zipWithIndex.indexWhere( {
+  }
+  def yearsPassed(totalDays: Int) : Int = {
+    accumulateDays(totalDays).zipWithIndex.indexWhere( {
       case (accDays, year) => totalDays <= accDays
     }) + 1970
   }
 
   def daysPassed(totalDays: Int) : Int = {
-    val yearLength = Stream.continually(YearsSequence).flatten.take((totalDays / 365) + 1).toList
-    val accumulatedDays = yearLength.zipWithIndex.foldLeft(Seq.empty[Int]) {
-      case (Nil, (cur, _)) => Seq(cur)
-      case (acc, (cur, i)) => acc ++ Seq(acc.last + cur)
-    }
-    accumulatedDays.zipWithIndex.indexWhere( {
+    val accumulatedDaysList = accumulateDays(totalDays)
+    accumulatedDaysList.zipWithIndex.indexWhere( {
       case (accDays, year) => totalDays <= accDays
     }) match {
       case 0 => totalDays
-      case n => totalDays - accumulatedDays(n-1)
+      case n => totalDays - accumulatedDaysList(n-1)
     }
   }
 
@@ -150,10 +143,10 @@ object Date {
   def calculateDate(currTimeMilliSec: Long): Date =
   {
     val totalDays = ((currTimeMilliSec / (60 * 60 * 24 * 1000))).toInt
-    val year = findYearsOrRemainingDaysOfYear(totalDays, true)
-    val daysOfThisyear = findYearsOrRemainingDaysOfYear(totalDays, false)
-    val month = findMonthOrDay(daysOfThisyear, year, true)
-    val day = findMonthOrDay(daysOfThisyear, year, false)
+    val year = yearsPassed(totalDays)
+    val daysOfThisYear = daysPassed(totalDays)
+    val month = findMonthOrDay(daysOfThisYear, year, true)
+    val day = findMonthOrDay(daysOfThisYear, year, false)
     val date =  Date(year, month, day)
     date
   }
