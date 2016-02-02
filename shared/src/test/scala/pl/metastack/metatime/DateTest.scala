@@ -5,9 +5,11 @@ import org.scalatest.FunSuite
 class DateTest extends FunSuite {
   import Implicits._
 
-  ignore("construct") {
+  test("construct") {
     val date = Date(2015, 12, 5)
-    assert(date == ???)
+    assert(date.y == 2015)
+    assert(date.m == 12)
+    assert(date.d == 5)
   }
 
   test("implicits") {
@@ -18,12 +20,16 @@ class DateTest extends FunSuite {
     assert(Day(1 + 1.0 / 24).unix().value == 90000000)
   }
 
-  ignore("date") {
+  test("date") {
     assert(Year(2015).date == Date(2015, 1, 1))
   }
 
-  ignore("add") {
-    assert(Date(2015) + 1.day == ???)
+  test("add") {
+    assert(Date(2015) + 1.day == Date(2015, 1, 2))
+  }
+
+  test("datePlus") {
+    assert(Date(2015, 1, 1) + Date(2015, 1, 1) == Date(2060, 1, 2))
   }
 
   ignore("until") {
