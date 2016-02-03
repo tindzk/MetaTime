@@ -57,6 +57,16 @@ object DateTime {
     override val ms: Int = milli
   }
 
+  def apply(): DateTime = new DateTime {
+    override val year: Int = 0
+    override val month: Int = 1
+    override val day: Double = 1.0
+    override val h: Int = 0
+    override val m: Int = 0
+    override val s: Int = 0
+    override val ms: Int = 0
+  }
+
   def apply(comp : Component) : DateTime = {
     comp match {
       case dT: DateTime =>
