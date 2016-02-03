@@ -26,7 +26,7 @@ object DateTime {
   def calculateDateTime(milliDate: Long, milliTime: Long): DateTime = {
     val date = Date(milliDate)
     val time = Time(milliTime)
-    DateTime(date.year, date.month, date.day, time.h, time.m, time.s, time.ms).asInstanceOf[DateTime]
+    DateTime(date.year, date.month, date.day, time.h, time.m, time.s, time.ms)
   }
 
   def now(): DateTime = calculateDateTime(Date.now().unix().value, Time.now.unix().value)
@@ -47,7 +47,7 @@ object DateTime {
 
   def apply(yr: Int = 0,  mo: Int = 1, dy: Double = 1.0,
             hr: Int = 0, min: Int = 0, sec: Int = 0,
-            milli: Int = 0): Date = new DateTime {
+            milli: Int = 0): DateTime = new DateTime {
     override val year: Int = yr
     override val month: Int = mo
     override val day: Double = dy
@@ -60,7 +60,7 @@ object DateTime {
   def apply(comp : Component) : DateTime = {
     comp match {
       case dT: DateTime =>
-        DateTime(dT.year, dT.month, dT.day, dT.h, dT.m, dT.s, dT.ms).asInstanceOf[DateTime]
+        DateTime(dT.year, dT.month, dT.day, dT.h, dT.m, dT.s, dT.ms)
 
       case tempYear: Year =>
         DateTime(tempYear.year, 1, 1, 0, 0, 0, 0)
@@ -69,7 +69,7 @@ object DateTime {
         DateTime(0, tempMonth.month, 1, 0, 0, 0, 0)
 
       case tempDay: Day =>
-        DateTime(0, 1, tempDay.day, 0, 0, 0, 0).asInstanceOf[DateTime]
+        DateTime(0, 1, tempDay.day, 0, 0, 0, 0)
 
       case tempHour: Hour =>
         DateTime(0, 1, 1, tempHour.h, 0, 0, 0)
