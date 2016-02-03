@@ -16,5 +16,7 @@ object Formatter {
 }
 
 trait Offset[T] {
-  def format: String = ???
+  def format: String = {
+    "This text is coming from Offset-> format function"
+  }
 }
