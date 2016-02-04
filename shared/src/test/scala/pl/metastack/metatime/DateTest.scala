@@ -7,9 +7,9 @@ class DateTest extends FunSuite {
 
   test("construct") {
     val date = Date(2015, 12, 5)
-    assert(date.y == 2015)
-    assert(date.m == 12)
-    assert(date.d == 5)
+    assert(date.year == 2015)
+    assert(date.month == 12)
+    assert(date.day == 5)
   }
 
   test("implicits") {
@@ -22,6 +22,7 @@ class DateTest extends FunSuite {
 
   test("date") {
     assert(Year(2015).date == Date(2015, 1, 1))
+    assert(Day(1) == Day(1))
   }
 
   test("add") {
@@ -42,26 +43,5 @@ class DateTest extends FunSuite {
 
     /** Unix timestamp */
     assert(DateTime.now().timestamp == ???)
-  }
-
-  ignore("format") {
-    val dateTime = DateTime(2015, 1, 1)
-    assert(dateTime.format == ???)
-    assert(dateTime.format("MMM d, yyyy") == ???)
-
-    val dateTimeOffset = DateTime(2015, 1, 1).fromNow
-    assert(dateTimeOffset.format == s"${???} days from now")
-  }
-
-  ignore("Custom formatter") {
-    val formatter = Formatter.branch(Seq(
-      (0.seconds to 1.minute) -> Formatter.JustNow,
-      (1.minute to 1.hour) -> Formatter.Ago(Formatter.Minutes),
-      (1.hour to 1.day) -> Formatter.Ago(Formatter.Hours),
-      (1.day to 1.week) -> Formatter.Ago(Formatter.Days)),
-      Formatter.DateTime(
-        "%monthShort% %dayShort%, %yearLong% %hour%:%minute% %amPm%"))
-
-    assert(formatter.format(DateTime.now()) == "just now")
   }
 }

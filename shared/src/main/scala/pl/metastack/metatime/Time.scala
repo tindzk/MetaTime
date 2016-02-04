@@ -8,7 +8,7 @@ trait Component extends Ordered[Component] {
 
   def format: String = ???
   def date: Date = Date(this)
-  def dateTime: DateTime = ???
+  def dateTime: DateTime = DateTime(this)
 
   def fromNow: Offset[Time] = ???
 
@@ -16,11 +16,41 @@ trait Component extends Ordered[Component] {
 
   def unix(): Unix
 
-  override def compare(that: Component): Int =
+  override def compare(that: Component): Int = {
     unix().value.compare(that.unix().value)
+  }
+
+  def yearsFromDefault(years: Int) = years - 1970
+
+  def calculateOffset(smallerTime: Component, biggerTime: Component): Component = {
+    val unixDiff = biggerTime.unix().value - smallerTime.unix().value
+    if(unixDiff <= 86400000) {
+      val timeObj = Time(unixDiff)
+      val timeNow = Time(biggerTime)
+      if((timeObj.h == timeNow.h) && (timeObj.m == timeNow.m)){
+        Second(timeObj.s)
+      }
+      else if(timeObj.h == timeNow.h) {
+        Minute(timeNow.m - timeObj.m)
+      }
+      else
+        Hour(timeObj.h)
+    }
+    else {
+      val dateObj = Date(unixDiff)
+      val dateNow = Date(biggerTime)
+      if((yearsFromDefault(dateObj.year) == 0) && (dateObj.month == dateNow.month))
+        Day(dateObj.day)
+      else if(yearsFromDefault(dateObj.year) == 0)
+        Month(dateObj.month)
+      else
+        Year(yearsFromDefault(dateObj.year))
+    }
+  }
 
   def getConstructionType(other: Component) : Component = {
     other match {
+      case _: DateTime => DateTime()
       case _: Time | _: Hour | _: Minute | _: Second | _: Millisecond => Time()
       case _: Date | _: Year | _: Month | _: Day => Date()
     }
@@ -30,21 +60,29 @@ trait Component extends Ordered[Component] {
     val thisComp = getConstructionType(this)
     val thatComp = getConstructionType(other)
     thisComp match {
+      case _: DateTime => DateTime()
       case _: Time => thatComp match {
         case _: Time => Time()
+        case _: Date => DateTime()
+        case _: DateTime => DateTime()
       }
       case _: Date => thatComp match {
         case _: Date => Date()
+        case _: Time => DateTime()
+        case _: DateTime => DateTime()
       }
     }
   }
 
   def +(other: Component): Component = {
     operationResultType(other) match {
+      case _: DateTime =>
+        DateTime(millisecond = ((unix().value) + (other.unix().value)))
       case _: Time =>
         Time(milliseconds = ((unix().value) + (other.unix().value)))
       case _: Date =>
         Date(milliseconds = ((unix().value) + (other.unix().value)))
+
     }
   }
 
@@ -68,18 +106,17 @@ trait Component extends Ordered[Component] {
   }
 
   def daysOfYear(y: Int) : Int = {
-    Stream.continually(YearsSequence).flatten.take(y - 1970).toList.sum
+    Stream.continually(YearsSequence).flatten.take(yearsFromDefault(y)).toList.sum
   }
 
   def daysOf(component: Component) : Int = {
     component match {
-      case d: Date => (d.d).toInt + daysOfMonth(d.m) + daysOfYear(d.y)
-      case m: Month => daysOfMonth(m.m)
-      case y: Year => daysOfYear(y.y)
+      case d: Date => (d.day).toInt + daysOfMonth(d.month) + daysOfYear(d.year)
+      case m: Month => daysOfMonth(m.month)
+      case y: Year => daysOfYear(y.year)
     }
   }
 }
-
 
 trait Hour extends Period with Component {
   val h: Int
@@ -189,7 +226,7 @@ object Time {
         minute = t.m,
         second = t.s,
         millisecond = t.ms)
-      case h: Hour => Time(hour= h.h)
+      case hr: Hour => Time(hour = hr.h)
       case m: Minute => Time(minute = m.m)
       case s: Second => Time(second = s.s)
       case ms: Millisecond => Time(millisecond = ms.ms)
@@ -197,8 +234,8 @@ object Time {
   }
 
   def apply(milliseconds: Long): Time = {
-    val hour = (milliseconds /
-      (Hour(1).unix().value)).toInt
+    val hour = ((milliseconds /
+      (Hour(1).unix().value)).toInt) % 24
     val minute = ((milliseconds %
       (Hour(1).unix().value)) /
       (Minute(1).unix().value)).toInt

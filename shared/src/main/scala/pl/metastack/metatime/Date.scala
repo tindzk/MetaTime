@@ -1,58 +1,58 @@
 package pl.metastack.metatime
 
 trait Year extends Component {
-  val y: Int
+  val year: Int
 
   override def unix(): Unix = Unix(daysOf(this).toLong * 24 * 3600 * 1000)
 
   override def equals(that: Any): Boolean =
     that match {
-      case other: Year => other.y == y
+      case other: Year => other.year == year
       case _ => false
     }
 }
 
 object Year {
   def apply(value: Int): Year = new Year {
-    override val y = value
+    override val year = value
   }
 }
 
 trait Month extends Component {
-  val m: Int
+  val month: Int
 
   override def unix(): Unix = Unix(daysOf(this).toLong * 24 * 3600 * 1000)
 
   override def equals(that: Any): Boolean =
     that match {
-      case other: Month => other.m == m
+      case other: Month => other.month == month
       case _ => false
     }
 }
 
 object Month {
   def apply(value: Int): Month = new Month {
-    override val m = value
+    override val month = value
   }
 }
 
 trait Day extends Component {
-  val d: Double
+  val day: Double
 
-  override def unix(): Unix = Unix((d * 24 * 3600 * 1000).toLong)
+  override def unix(): Unix = Unix((day * 24 * 3600 * 1000).toLong)
 
   override def equals(that: Any): Boolean =
     that match {
-      case other: Month => other.m == d
+      case other: Day => other.day == day
       case _ => false
     }
 
-  def truncate: Day = Day(Math.round(d))
+  def truncate: Day = Day(Math.round(day))
 }
 
 object Day {
   def apply(value: Double): Day = new Day {
-    override val d = value
+    override val day = value
   }
 }
 
@@ -60,123 +60,112 @@ trait Date extends Year with Month with Day {
 
   override def equals(that: Any): Boolean =
     that match {
-      case other: Date => other.y == y && other.m == m && other.d == d
+      case other: Date => other.year == year && other.month == month && other.day == day
       case _ => false
     }
 
   override def unix(): Unix = Unix(
-    Year(y).unix().value +
-    Month(m).unix().value +
-    Day(d).unix().value)
-
+    Year(year).unix().value +
+    Month(month).unix().value +
+    Day(day).unix().value)
 }
 
 object Date {
-  def apply(year: Int): Date = new Date {
-    override val y: Int = year
-    override val m: Int = 1
-    override val d: Double = 1.0
+  def apply(y: Int): Date = new Date {
+    override val year: Int = y
+    override val month: Int = 1
+    override val day: Double = 1.0
   }
   def apply(year: Int, month: Int): Date = ???
   def parse(format: String, timezone: Timezone): Date = ???
 
   val YearsSequence = Seq(365, 365, 366, 365)
+  val DaysInMonths = Seq(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+  val LeapDaysInMonths = Seq(31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 
-  def accumulateDays(totalDays: Int) : Seq[Int] = {
+  def isLeapYear(year: Int): Boolean = (year % 4) == 0
+  def accumulate(f: Int => Seq[Int], y: Int): Seq[Int] = f(y)
+  def accuPrevElements(seq: Seq[Int]) = seq.scanLeft(0)(_ + _).tail
+
+  def accuYears(totalDays: Int) : Seq[Int] = {
     val yearLength = Stream.continually(YearsSequence).flatten.take((totalDays / 365) + 1).toList
-    yearLength.zipWithIndex.foldLeft(Seq.empty[Int]) {
-      case (Nil, (cur, _)) => Seq(cur)
-      case (acc, (cur, i)) => acc ++ Seq(acc.last + cur)
-    }
+    accuPrevElements(yearLength)
   }
+
   def yearsPassed(totalDays: Int) : Int = {
-    accumulateDays(totalDays).zipWithIndex.indexWhere( {
+    accumulate(accuYears, totalDays).zipWithIndex.indexWhere( {
       case (accDays, year) => totalDays <= accDays
     }) + 1970
   }
 
   def daysPassed(totalDays: Int) : Int = {
-    val accumulatedDaysList = accumulateDays(totalDays)
-    accumulatedDaysList.zipWithIndex.indexWhere( {
-      case (accDays, year) => totalDays <= accDays
-    }) match {
+    val accumulatedDaysList = accumulate(accuYears, totalDays).filter(x => x <= totalDays)
+    accumulatedDaysList.length match {
       case 0 => totalDays
-      case n => totalDays - accumulatedDaysList(n-1)
+      case n => totalDays - accumulatedDaysList(n - 1)
     }
   }
 
-  val DaysInMonths = Seq(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+  def findMonth(days: Int, year: Int): Int =
+    accumulate(accuDays, year).filter(x => x <= days).length + 1
 
-  def isLeapYear(year: Int): Boolean = (year % 4) == 0
-
-
-  def findMonthOrDay(days: Int, year: Int, month: Boolean): Int = {
-    if(month) { findMonth(days, year)}
-    else { findDay(days, year) }
-  }
-
-  def findMonth(days: Int, year: Int): Int = {
-    val accumulatedDays = DaysInMonths.zipWithIndex.foldLeft(Seq.empty[Int]) {
-      case (Nil, (cur, _)) => Seq(cur)
-      case (acc, (cur, 1)) if isLeapYear(year) => acc ++ Seq(acc.last + 29)
-      case (acc, (cur, i)) => acc ++ Seq(acc.last + cur)
-    }
-    accumulatedDays.zipWithIndex.indexWhere {
-      case (accDays, month) => days <= accDays
-    } + 1
+  def accuDays(year: Int): Seq[Int] = {
+    if(isLeapYear(year))
+      accuPrevElements(LeapDaysInMonths)
+    else
+      accuPrevElements(DaysInMonths)
   }
 
   def findDay(days: Int, year: Int): Int = {
-    val accumulatedDays = DaysInMonths.zipWithIndex.foldLeft(Seq.empty[Int]) {
-      case (Nil, (cur, _)) => Seq(cur)
-      case (acc, (cur, 1)) if isLeapYear(year) => acc ++ Seq(acc.last + 29)
-      case (acc, (cur, i)) => acc ++ Seq(acc.last + cur)
-    }
-    (accumulatedDays.zipWithIndex.indexWhere {
-     case (accDays, month) => days <= accDays
-    }) match {
+    val accumulatedDays = accumulate(accuDays, year).filter(x => x <= days)
+    accumulatedDays.length match {
       case 0 => days
       case n => days - accumulatedDays(n - 1)
     }
   }
 
-  def calculateDate(currTimeMilliSec: Long): Date =
+  def milliToDays(milliSeconds: Long, flagNow: Boolean): Int = {
+      if((milliSeconds % (60 * 60 * 24 * 1000) > 0) && (flagNow)){
+        (((milliSeconds / (60 * 60 * 24 * 1000))).toInt) + 1
+      }
+      else { ((milliSeconds / (60 * 60 * 24 * 1000))).toInt }
+    }
+
+  def calculateDate(totalDays: Int): Date =
   {
-    val totalDays = ((currTimeMilliSec / (60 * 60 * 24 * 1000))).toInt
     val year = yearsPassed(totalDays)
     val daysOfThisYear = daysPassed(totalDays)
-    val month = findMonthOrDay(daysOfThisYear, year, true)
-    val day = findMonthOrDay(daysOfThisYear, year, false)
-    val date =  Date(year, month, day)
-    date
+    val month = findMonth(daysOfThisYear, year)
+    val day = findDay(daysOfThisYear, year)
+    Date(year, month, day)
   }
 
   def now(): Date = {
     val currTimeInMilliSec: Long = System.currentTimeMillis()
-    calculateDate(currTimeInMilliSec)
+    calculateDate(milliToDays(currTimeInMilliSec, true))
   }
 
   def apply(milliseconds: Long): Date = {
-    calculateDate(milliseconds)
+    calculateDate(milliToDays(milliseconds, false))
   }
 
   def apply(comp : Component) : Date = {
     comp match {
-      case d: Date =>
-        Date(year = d.y,
-          month = d.m,
-          day = d.d)
-      case d: Day => Date(day = d.d)
-      case m: Month => Date(month = m.m)
-      case y: Year => Date(year = y.y)
+      case date: Date =>
+        Date(y = date.year,
+          m = date.month,
+          d = date.day)
+      case d: Day => Date(d = d.day)
+      case month: Month => Date(m = month.month)
+      case y: Year => Date(y = y.year)
     }
   }
 
-  def apply(year: Int = 0,
-    month: Int = 1,
-    day: Double = 1.0): Date = new Date {
-      override val y: Int = year
-      override val m: Int = month
-      override val d: Double = day
+  def apply(y: Int = 0,
+    m: Int = 1,
+    d: Double = 1.0): Date = new Date {
+      override val year: Int = y
+      override val month: Int = m
+      override val day: Double = d
   }
 }
