@@ -33,7 +33,7 @@ class DateTimeTest extends FunSuite {
     //assert(dateTime.format == ???)
     //assert(dateTime.format("MMM d, yyyy") == ???)
 
-    val dateTimeOffset = DateTime(2015, 1, 1).fromNow
+    //val dateTimeOffset = DateTime(2015, 1, 1).fromNow
     //assert(dateTimeOffset.format == s"${???} days from now")
   }
 
