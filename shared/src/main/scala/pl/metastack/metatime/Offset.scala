@@ -17,10 +17,10 @@ object Formatter {
   def branch(ranges: Seq[(Range, Any)], fallback: Any): Formatter = ???
 }
 
-trait Offset[T <: Component] {
+trait Offset[+T <: Component] {
   val component: T
   def format: String = {
-    if(component.asInstanceOf[Component].unix().value <= 0)
+    if(component.unix().value <= 0)
       In + absoluteVal
     else
       absoluteVal + Ago
