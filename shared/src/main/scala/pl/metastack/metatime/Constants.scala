@@ -24,6 +24,5 @@ object Constants {
 
     final val IN = "in "
     final val AGO = " ago"
-
   }
 

@@ -126,7 +126,6 @@ object Date {
   }
 
   def milliToDays(milliSeconds: Long, flagNow: Boolean): Int = {
-
       if((milliSeconds % (60 * 60 * 24 * 1000) > 0) && (flagNow)){
         (((milliSeconds / (60 * 60 * 24 * 1000))).toInt) + 1
       }

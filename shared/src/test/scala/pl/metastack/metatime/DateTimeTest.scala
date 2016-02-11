@@ -54,5 +54,4 @@ class DateTimeTest extends FunSuite {
     assert(DateTime(2013, 2, 1, 1, 1, 1, 1).fromNow().format =="3 year(s) ago")
   }
 
-
 }
