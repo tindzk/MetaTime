@@ -1,5 +1,7 @@
 package pl.metastack.metatime
 
+import Constants._
+
 trait Component extends Ordered[Component] {
 
   def until(component: Component): Period = ???
@@ -7,10 +9,10 @@ trait Component extends Ordered[Component] {
   def days: Day = Day(unix().value / 0.0)
 
   def format: String = ???
-  def date: Date = Date(this)
-  def dateTime: DateTime = DateTime(this)
 
-  def fromNow: Offset[Time] = ???
+  def date: Date = Date(this)
+
+  def dateTime: DateTime = DateTime(this)
 
   def to(until: Component): Range = ???
 
@@ -20,31 +22,167 @@ trait Component extends Ordered[Component] {
     unix().value.compare(that.unix().value)
   }
 
-  def yearsFromDefault(years: Int) = years - 1970
+  def yearsFromDefault(years: Int) = years - DEFAULT_YEAR
 
-  def calculateOffset(smallerTime: Component, biggerTime: Component): Component = {
-    val unixDiff = biggerTime.unix().value - smallerTime.unix().value
-    if(unixDiff <= 86400000) {
-      val timeObj = Time(unixDiff)
-      val timeNow = Time(biggerTime)
-      if((timeObj.h == timeNow.h) && (timeObj.m == timeNow.m)){
-        Second(timeObj.s)
-      }
-      else if(timeObj.h == timeNow.h) {
-        Minute(timeNow.m - timeObj.m)
-      }
-      else
-        Hour(timeObj.h)
+  def fromNow(): Offset[_] = {
+    getConstructionType(this) match {
+      case _: DateTime =>
+        val result = calcOffset()
+        Offset[Component] { result }
+      case _: Time =>
+        val result = calcOffset()
+        Offset[Component] { result }
+      case _: Date =>
+        val result = calcOffset()
+        Offset[Component] { result }
+    }
+  }
+
+  def calcTimeDifference(): Time = {
+    val timeNow = Time.now()
+    val otherTime = Time(unix().value)
+    if ((otherTime.h == 0) && (otherTime.m == 0) && (otherTime.s == 0)) {
+      Time(timeNow.h, timeNow.m, timeNow.s, otherTime.ms)
+    }
+    else if (otherTime.h == 0 && otherTime.m == 0) {
+      Time(timeNow.h, timeNow.m, otherTime.s, otherTime.ms)
+    }
+    else if (otherTime.h == 0) {
+      Time(timeNow.h, otherTime.m, otherTime.s, otherTime.ms)
     }
     else {
-      val dateObj = Date(unixDiff)
-      val dateNow = Date(biggerTime)
-      if((yearsFromDefault(dateObj.year) == 0) && (dateObj.month == dateNow.month))
-        Day(dateObj.day)
-      else if(yearsFromDefault(dateObj.year) == 0)
-        Month(dateObj.month)
+      Time(Time.now().unix().value - unix().value)
+    }
+  }
+
+  def calcDateDifference(): Date = {
+    val otherDate = Date(unix().value)
+    val nowDate = Date.now()
+    if((yearsFromDefault(otherDate.year) == 0) && (otherDate.month == 0)) {
+      Date(nowDate.year, nowDate.month, otherDate.day)
+    }
+    else if(yearsFromDefault(otherDate.year) == 0) {
+      Date(nowDate.year, otherDate.month, otherDate.day)
+    }
+    else {
+      Date(nowDate.unix().value - otherDate.unix().value)
+    }
+  }
+
+  def calcDateTimeDifference(): DateTime = {
+    val smDate = DateTime(unix().value)
+    val dt = DateTime.now()
+    if((yearsFromDefault(smDate.year) == 0) && (smDate.month == 0) && (smDate.day == 0)
+      && (smDate.h == 0) && (smDate.m == 0) && (smDate.s == 0)) {
+      DateTime(dt.year, dt.month, dt.day, dt.h, dt.m, dt.s, smDate.ms)
+    }
+    else if((yearsFromDefault(smDate.year) == 0) && (smDate.month == 0)
+      && (smDate.day == 0) && (smDate.h == 0) && (smDate.m == 0)) {
+      DateTime(dt.year, dt.month, dt.day, dt.h, dt.m, smDate.s, smDate.ms)
+    }
+    else if((yearsFromDefault(smDate.year) == 0) && (smDate.month == 0)
+      && (smDate.day == 0) && (smDate.h == 0)) {
+      DateTime(dt.year, dt.month, dt.day, dt.h, smDate.m, smDate.s, smDate.ms)
+    }
+    else if((yearsFromDefault(smDate.year) == 0) && (smDate.month == 0)
+      && (smDate.day == 0)) {
+      DateTime(dt.year, dt.month, dt.day, smDate.h, smDate.m, smDate.s, smDate.ms)
+    }
+    else if((yearsFromDefault(smDate.year) == 0) && (smDate.month == 0)) {
+      DateTime(dt.year, dt.month, smDate.day, smDate.h, smDate.m, smDate.s, smDate.ms)
+    }
+    else if(yearsFromDefault(smDate.year) == 0) {
+      DateTime(dt.year, smDate.month, smDate.day, smDate.h, smDate.m, smDate.s, smDate.ms)
+    }
+    else if(yearsFromDefault(smDate.year) == 0) {
+      DateTime(dt.year, smDate.month, smDate.day, smDate.h, smDate.m, smDate.s, smDate.ms)
+    }
+    else {
+      DateTime(dt.unix().value - smDate.unix().value)
+    }
+  }
+
+  def firstValidUnit(dt: DateTime, unit: Int): Boolean = {
+    val func = Seq[DateTime => Boolean](
+      _.year - DEFAULT_YEAR == 0,
+      _.month == 1,
+      _.day == 0,
+      _.h == 0,
+      _.m == 0,
+      _.s == 0
+    )
+    func.slice(0, unit).forall(_(dt))
+  }
+
+  def mostSignificantTime(timeDiff: Time): Component = {
+    val timeNow = Time.now()
+    if(timeDiff.h == timeNow.h && timeDiff.m == timeNow.m && timeDiff.s == timeNow.s)
+      Millisecond(timeDiff.ms)
+    else if(timeDiff.h == timeNow.h && timeDiff.m == timeNow.m)
+      Second(timeDiff.s)
+    else if(timeDiff.h == timeNow.h || timeDiff.h == 0)
+      Minute(timeDiff.m)
+    else {
+      Hour(timeNow.h - timeDiff.h)
+    }
+  }
+
+  def absoluteDateTime(dt: DateTime): DateTime = {
+    if(dt.unix().value <= 0)
+      DateTime(math.abs(dt.year), math.abs(dt.month),
+      math.abs(dt.day), math.abs(dt.h), math.abs(dt.m),
+      math.abs(dt.s), math.abs(dt.ms))
+    else
+      dt
+  }
+
+  def mostSignificantDateTime(dt: DateTime): Component = {
+    val dtDiff = absoluteDateTime(dt)
+    if(firstValidUnit(dtDiff, SECOND_INDEX))
+      Millisecond(dt.ms)
+    else if(firstValidUnit(dtDiff, MINUTE_INDEX))
+      Second(dt.s)
+    else if(firstValidUnit(dtDiff, HOUR_INDEX))
+      Minute(dt.m)
+    else if(firstValidUnit(dtDiff, DAY_INDEX))
+      Hour(dt.h)
+    else if(firstValidUnit(dtDiff, MONTH_INDEX))
+      Day(dt.day)
+    else if(firstValidUnit(dtDiff, YEAR_INDEX)) {
+      if(dt.month < 0)
+        Month(dt.month + 1)
       else
-        Year(yearsFromDefault(dateObj.year))
+        Month(dt.month - 1)
+    }
+    else if(dt.year < 0)
+      Year(dt.year + DEFAULT_YEAR)
+    else
+    Year(dt.year - DEFAULT_YEAR)
+  }
+
+  def mostSignificantDate(dateDiff: Date): Component = {
+    if((yearsFromDefault(dateDiff.year) == 0) && (dateDiff.month == 1))
+      Day(dateDiff.day)
+    else if(yearsFromDefault(dateDiff.year) == 0) {
+      if(dateDiff.month < 0) Month(dateDiff.month + 1)
+      else Month(dateDiff.month - 1)
+    }
+    else {
+      if(dateDiff.year < 0)
+        Year(dateDiff.year + DEFAULT_YEAR)
+      else
+        Year(dateDiff.year - DEFAULT_YEAR)
+    }
+  }
+
+  def calcOffset(): Component = {
+    if(math.abs(unix().value) <= MILLIS_IN_DAY)
+       mostSignificantTime(calcTimeDifference())
+    else getConstructionType(this) match {
+      case _: DateTime =>
+        mostSignificantDateTime(calcDateTimeDifference())
+      case _: Date =>
+        mostSignificantDate(calcDateDifference())
     }
   }
 
@@ -62,14 +200,14 @@ trait Component extends Ordered[Component] {
     thisComp match {
       case _: DateTime => DateTime()
       case _: Time => thatComp match {
+        case _: DateTime => DateTime()
         case _: Time => Time()
         case _: Date => DateTime()
-        case _: DateTime => DateTime()
       }
       case _: Date => thatComp match {
+        case _: DateTime => DateTime()
         case _: Date => Date()
         case _: Time => DateTime()
-        case _: DateTime => DateTime()
       }
     }
   }
@@ -77,19 +215,22 @@ trait Component extends Ordered[Component] {
   def +(other: Component): Component = {
     operationResultType(other) match {
       case _: DateTime =>
-        DateTime(millisecond = ((unix().value) + (other.unix().value)))
+        DateTime(millisecond = unix().value + other.unix().value)
       case _: Time =>
-        Time(milliseconds = ((unix().value) + (other.unix().value)))
+        Time(milliseconds = unix().value + other.unix().value)
       case _: Date =>
-        Date(milliseconds = ((unix().value) + (other.unix().value)))
-
+        Date(milliseconds = unix().value + other.unix().value)
     }
   }
 
   def -(other: Component): Component = {
     operationResultType(other) match {
+      case _: DateTime =>
+        DateTime(millisecond = unix().value - other.unix().value)
       case _: Time =>
-        Time(milliseconds = ((unix().value) - (other.unix().value)))
+        Time(milliseconds = unix().value - other.unix().value)
+      case _: Date =>
+        Date(milliseconds = unix().value - other.unix().value)
     }
   }
 
@@ -101,12 +242,15 @@ trait Component extends Ordered[Component] {
       case (Nil, (cur, _)) => Seq(cur)
       case (acc, (cur, i)) => acc ++ Seq(acc.last + cur)
     }
-    if(month <= 1) 0
-    else { accumulatedDays(month-1) }
+    if(month <= 1) { 0 }
+    else { accumulatedDays(month - 2) }
   }
 
   def daysOfYear(y: Int) : Int = {
-    Stream.continually(YearsSequence).flatten.take(yearsFromDefault(y)).toList.sum
+    if(y < DEFAULT_YEAR)
+    Stream.continually(YearsSequence).flatten.take(y).toList.sum
+    else
+      Stream.continually(YearsSequence).flatten.take(yearsFromDefault(y)).toList.sum
   }
 
   def daysOf(component: Component) : Int = {
@@ -120,8 +264,6 @@ trait Component extends Ordered[Component] {
 
 trait Hour extends Period with Component {
   val h: Int
-
- // override def fromNow = HourOffset(h)
 
   override def unix(): Unix = Unix(h * Minute(60).unix().value)
 

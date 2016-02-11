@@ -44,4 +44,12 @@ class DateTest extends FunSuite {
     /** Unix timestamp */
     assert(DateTime.now().timestamp == ???)
   }
+
+  test("fromNow") {
+
+    assert(Date(2012, 1, 1).fromNow().format == "4 year(s) ago")
+    assert(Date(2015, 8, 8).fromNow().format == "6 month(s) ago")
+    assert(Date(2018, 10, 1).fromNow().format == "in 2 year(s)")
+
+  }
 }

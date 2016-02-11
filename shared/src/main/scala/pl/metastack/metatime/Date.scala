@@ -66,8 +66,8 @@ trait Date extends Year with Month with Day {
 
   override def unix(): Unix = Unix(
     Year(year).unix().value +
-    Month(month).unix().value +
-    Day(day).unix().value)
+      Month(month).unix().value +
+      Day(day).unix().value)
 }
 
 object Date {
@@ -89,6 +89,8 @@ object Date {
 
   def accuYears(totalDays: Int) : Seq[Int] = {
     val yearLength = Stream.continually(YearsSequence).flatten.take((totalDays / 365) + 1).toList
+    //println("Inside OOOOOOOOOO accuYears, totalDays = " + totalDays)
+    //println("Inside PPPPPPPPPP accuYears, yearLength = " + yearLength)
     accuPrevElements(yearLength)
   }
 
@@ -106,8 +108,11 @@ object Date {
     }
   }
 
-  def findMonth(days: Int, year: Int): Int =
-    accumulate(accuDays, year).filter(x => x <= days).length + 1
+  def findMonth(days: Int, year: Int): Int = {
+    val res = accumulate(accuDays, year).filter(x => x <= math.abs(days)).length + 1
+    if(days < 0) -res
+    else res
+  }
 
   def accuDays(year: Int): Seq[Int] = {
     if(isLeapYear(year))
@@ -125,19 +130,24 @@ object Date {
   }
 
   def milliToDays(milliSeconds: Long, flagNow: Boolean): Int = {
+
       if((milliSeconds % (60 * 60 * 24 * 1000) > 0) && (flagNow)){
-        (((milliSeconds / (60 * 60 * 24 * 1000))).toInt) + 1
+        (((milliSeconds / (60 * 60 * 24 * 1000))).toInt)
       }
       else { ((milliSeconds / (60 * 60 * 24 * 1000))).toInt }
     }
 
   def calculateDate(totalDays: Int): Date =
   {
-    val year = yearsPassed(totalDays)
-    val daysOfThisYear = daysPassed(totalDays)
+    val year = yearsPassed(math.abs(totalDays))
+    //println("Total year = > " + year)
+    val daysOfThisYear = daysPassed(math.abs(totalDays))
+    //println("daysOfThisYear = " + daysOfThisYear)
     val month = findMonth(daysOfThisYear, year)
+    //println("Month = " + month)
     val day = findDay(daysOfThisYear, year)
-    Date(year, month, day)
+    if(totalDays <= 0) Date(-year, -month, -day)
+    else Date(year, month, day)
   }
 
   def now(): Date = {
@@ -146,6 +156,7 @@ object Date {
   }
 
   def apply(milliseconds: Long): Date = {
+    //println("Inside apply of Date, and total Days calculated = " + milliToDays(milliseconds, false))
     calculateDate(milliToDays(milliseconds, false))
   }
 
