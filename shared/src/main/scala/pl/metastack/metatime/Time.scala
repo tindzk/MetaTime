@@ -22,21 +22,9 @@ trait Component extends Ordered[Component] {
     unix().value.compare(that.unix().value)
   }
 
-  def yearsFromDefault(years: Int) = years - DEFAULT_YEAR
+  def yearsFromDefault(years: Int) = years - DefaultYear
 
-  def fromNow(): Offset[_] = {
-    getConstructionType(this) match {
-      case _: DateTime =>
-        val result = calcOffset()
-        Offset[Component] { result }
-      case _: Time =>
-        val result = calcOffset()
-        Offset[Component] { result }
-      case _: Date =>
-        val result = calcOffset()
-        Offset[Component] { result }
-    }
-  }
+  def fromNow(): Offset[_] = Offset(calcOffset())
 
   def calcTimeDifference(): Time = {
     val timeNow = Time.now()
@@ -104,7 +92,7 @@ trait Component extends Ordered[Component] {
 
   def firstValidUnit(dt: DateTime, unit: Int): Boolean = {
     val func = Seq[DateTime => Boolean](
-      _.year - DEFAULT_YEAR == 0,
+      _.year - DefaultYear == 0,
       _.month == 1,
       _.day == 0,
       _.h == 0,
@@ -138,26 +126,26 @@ trait Component extends Ordered[Component] {
 
   def mostSignificantDateTime(dt: DateTime): Component = {
     val dtDiff = absoluteDateTime(dt)
-    if(firstValidUnit(dtDiff, SECOND_INDEX))
+    if(firstValidUnit(dtDiff, SecondIndex))
       Millisecond(dt.ms)
-    else if(firstValidUnit(dtDiff, MINUTE_INDEX))
+    else if(firstValidUnit(dtDiff, MinuteIndex))
       Second(dt.s)
-    else if(firstValidUnit(dtDiff, HOUR_INDEX))
+    else if(firstValidUnit(dtDiff, HourIndex))
       Minute(dt.m)
-    else if(firstValidUnit(dtDiff, DAY_INDEX))
+    else if(firstValidUnit(dtDiff, DayIndex))
       Hour(dt.h)
-    else if(firstValidUnit(dtDiff, MONTH_INDEX))
+    else if(firstValidUnit(dtDiff, MonthIndex))
       Day(dt.day)
-    else if(firstValidUnit(dtDiff, YEAR_INDEX)) {
+    else if(firstValidUnit(dtDiff, YearIndex)) {
       if(dt.month < 0)
         Month(dt.month + 1)
       else
         Month(dt.month - 1)
     }
     else if(dt.year < 0)
-      Year(dt.year + DEFAULT_YEAR)
+      Year(dt.year + DefaultYear)
     else
-    Year(dt.year - DEFAULT_YEAR)
+    Year(dt.year - DefaultYear)
   }
 
   def mostSignificantDate(dateDiff: Date): Component = {
@@ -169,14 +157,14 @@ trait Component extends Ordered[Component] {
     }
     else {
       if(dateDiff.year < 0)
-        Year(dateDiff.year + DEFAULT_YEAR)
+        Year(dateDiff.year + DefaultYear)
       else
-        Year(dateDiff.year - DEFAULT_YEAR)
+        Year(dateDiff.year - DefaultYear)
     }
   }
 
   def calcOffset(): Component = {
-    if(math.abs(unix().value) <= MILLIS_IN_DAY)
+    if(math.abs(unix().value) <= MillisInDay)
        mostSignificantTime(calcTimeDifference())
     else getConstructionType(this) match {
       case _: DateTime =>
@@ -247,7 +235,7 @@ trait Component extends Ordered[Component] {
   }
 
   def daysOfYear(y: Int) : Int = {
-    if(y < DEFAULT_YEAR)
+    if(y < DefaultYear)
     Stream.continually(YearsSequence).flatten.take(y).toList.sum
     else
       Stream.continually(YearsSequence).flatten.take(yearsFromDefault(y)).toList.sum

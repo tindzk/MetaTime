@@ -17,13 +17,13 @@ object Formatter {
   def branch(ranges: Seq[(Range, Any)], fallback: Any): Formatter = ???
 }
 
-trait Offset[+T] {
+trait Offset[T <: Component] {
   val component: T
   def format: String = {
     if(component.asInstanceOf[Component].unix().value <= 0)
-      IN + absoluteVal
+      In + absoluteVal
     else
-      absoluteVal + AGO
+      absoluteVal + Ago
   }
 
   def absoluteVal: String = {
@@ -44,7 +44,6 @@ trait Offset[+T] {
 }
 
 object Offset {
-  def apply[Component](value: Component): Offset[Component] = new Offset[Component] {
-     override val component = value
-  }
+  def apply[T <: Component](value: T): Offset[T] =
+    new Offset[T] { override val component = value }
 }

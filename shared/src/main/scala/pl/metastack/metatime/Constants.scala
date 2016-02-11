@@ -1,28 +1,28 @@
 package pl.metastack.metatime
 
 object Constants {
-    final val YEAR_INDEX = 1
-    final val MONTH_INDEX = 2
-    final val DAY_INDEX = 3
-    final val HOUR_INDEX = 4
-    final val MINUTE_INDEX = 5
-    final val SECOND_INDEX = 6
-    final val MILLISECOND_INDEX = 7
+  final val YearIndex = 1
+  final val MonthIndex = 2
+  final val DayIndex = 3
+  final val HourIndex = 4
+  final val MinuteIndex = 5
+  final val SecondIndex = 6
+  final val MillisecondIndex = 7
 
-    final val MILLIS_IN_SECOND = 1000
-    final val SECONDS_IN_MINUTE = 60
-    final val MILLIS_IN_MINUTE = SECONDS_IN_MINUTE * MILLIS_IN_SECOND
-    final val MINUTES_IN_HOUR = 60
-    final val SECONDS_IN_HOUR = MINUTES_IN_HOUR * SECONDS_IN_MINUTE
-    final val MILLIS_IN_HOUR = MINUTES_IN_HOUR * MILLIS_IN_MINUTE
+  final val MillisInSecond = 1000
+  final val SecondsInMinute = 60
+  final val MillisInMinute = SecondsInMinute * MillisInSecond
+  final val MinutesInHour = 60
+  final val SecondsInHour = MinutesInHour * SecondsInMinute
+  final val MillisInHour = MinutesInHour * MillisInMinute
 
-    final val HOURS_IN_DAY = 24
-    final val MINUTES_IN_DAY = HOURS_IN_DAY * MINUTES_IN_HOUR
-    final val SECONDS_IN_DAY = HOURS_IN_DAY * SECONDS_IN_HOUR
-    final val MILLIS_IN_DAY = HOURS_IN_DAY * MILLIS_IN_HOUR
-    final val DEFAULT_YEAR = 1970
+  final val HoursInDay = 24
+  final val MinutesInDay = HoursInDay * MinutesInHour
+  final val SecondsInDay = HoursInDay * SecondsInHour
+  final val MillisInDay = HoursInDay * MillisInHour
+  final val DefaultYear = 1970
 
-    final val IN = "in "
-    final val AGO = " ago"
-  }
+  final val In = "in "
+  final val Ago = " ago"
+}
 

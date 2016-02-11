@@ -107,7 +107,7 @@ object Date {
   }
 
   def findMonth(days: Int, year: Int): Int = {
-    accumulate(accuDays, year).filter(x => x <= math.abs(days)).length + 1
+    accumulate(accuDays, year).filter(x => x <= days).length + 1
   }
 
   def accuDays(year: Int): Seq[Int] = {
