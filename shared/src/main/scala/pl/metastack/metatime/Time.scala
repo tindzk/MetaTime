@@ -242,8 +242,8 @@ trait Component extends Ordered[Component] {
       case (Nil, (cur, _)) => Seq(cur)
       case (acc, (cur, i)) => acc ++ Seq(acc.last + cur)
     }
-    if(month <= 1) { 0 }
-    else { accumulatedDays(month - 2) }
+    if(month <= 1) 0
+    else accumulatedDays(month - 2)
   }
 
   def daysOfYear(y: Int) : Int = {

@@ -48,6 +48,7 @@ trait Task {
 }
 
 object Scheduler {
+  def at(time: Time)(f: => Unit): Task = ???
   def at(time: DateTime)(f: => Unit): Task = ???
   def at(time: Offset[Time])(f: => Unit): Task = ???
 

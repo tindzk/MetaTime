@@ -25,7 +25,7 @@ class SchedulerTest extends FunSuite {
 
   ignore("every()") {
     var counter = 0
-    val task = Scheduler.every(5.minutes) { t =>
+    val task = Scheduler.every(5.minutes) { case t =>
       if (counter > 2) t.cancel()
       counter += 1
     }
