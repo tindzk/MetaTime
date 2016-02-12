@@ -6,13 +6,13 @@ class SchedulerTest extends FunSuite {
   import Implicits._
 
   ignore("at()") {
-    val task = Scheduler.at(5.second.fromNow) {
+    val task = Scheduler.at(5.second.fromNow.component.asInstanceOf[DateTime]) {
       ???
     }
 
     task.cancel()
 
-    val task2 = Scheduler.at(5.minutes.fromNow) {
+    val task2 = Scheduler.at(5.minutes.fromNow.component.asInstanceOf[DateTime]) {
       ???
     }
   }

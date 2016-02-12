@@ -33,7 +33,7 @@ class DateTimeTest extends FunSuite {
     //assert(dateTime.format == ???)
     //assert(dateTime.format("MMM d, yyyy") == ???)
 
-    val dateTimeOffset = DateTime(2015, 1, 1).fromNow
+    //val dateTimeOffset = DateTime(2015, 1, 1).fromNow
     //assert(dateTimeOffset.format == s"${???} days from now")
   }
 
@@ -47,6 +47,11 @@ class DateTimeTest extends FunSuite {
         "%monthShort% %dayShort%, %yearLong% %hour%:%minute% %amPm%"))
 
     assert(formatter.format(DateTime.now()) == "just now")
+  }
+
+  test("fromNow") {
+    assert(DateTime(2018, 10, 1, 1, 1, 1, 1).fromNow().format =="in 2 year(s)")
+    assert(DateTime(2013, 2, 1, 1, 1, 1, 1).fromNow().format =="3 year(s) ago")
   }
 
 }

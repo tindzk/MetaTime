@@ -51,7 +51,7 @@ class TimeTest extends FunSuite {
     assert(Time(23).format == "11 pm")
   }
 
-  ignore("fromNow") {
-    assert(Minute(5).fromNow == 5)
+  test("fromNow") {
+    assert(Minute(120).fromNow().format == "2 hour(s) ago")
   }
 }

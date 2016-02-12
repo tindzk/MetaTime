@@ -106,8 +106,9 @@ object Date {
     }
   }
 
-  def findMonth(days: Int, year: Int): Int =
+  def findMonth(days: Int, year: Int): Int = {
     accumulate(accuDays, year).filter(x => x <= days).length + 1
+  }
 
   def accuDays(year: Int): Seq[Int] = {
     if(isLeapYear(year))
@@ -133,11 +134,12 @@ object Date {
 
   def calculateDate(totalDays: Int): Date =
   {
-    val year = yearsPassed(totalDays)
-    val daysOfThisYear = daysPassed(totalDays)
+    val year = yearsPassed(math.abs(totalDays))
+    val daysOfThisYear = daysPassed(math.abs(totalDays))
     val month = findMonth(daysOfThisYear, year)
     val day = findDay(daysOfThisYear, year)
-    Date(year, month, day)
+    if(totalDays <= 0) Date(-year, -month, -day)
+    else Date(year, month, day)
   }
 
   def now(): Date = {
