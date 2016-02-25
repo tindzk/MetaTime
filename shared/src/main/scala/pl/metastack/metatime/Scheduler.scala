@@ -20,6 +20,27 @@ trait Scheduler {
     })
 
   def currentTimeMillis(): Long = System.currentTimeMillis()
+
+  def at(time: Time)(f: => Unit): Cancelable =
+    at(time.fromNow())(f)
+  def at(time: DateTime)(f: => Unit): Cancelable =
+    at(time.fromNow())(f)
+
+  def at(time: Offset[_])(f: => Unit): Cancelable = {
+    //TODO Remove cast asInstanceOf[Component]
+    scheduleOnce(time.component.asInstanceOf[Component].milliseconds().millis)(f)
+  }
+
+  def in(time: Time)(f: => Unit): Cancelable =
+    scheduleOnce(time.milliseconds.millis)(f)
+  def in(date: Date)(f: => Unit): Cancelable =
+    scheduleOnce(date.milliseconds.millis)(f)
+  def in(dateTime: DateTime)(f: => Unit): Cancelable =
+    scheduleOnce(dateTime.milliseconds.millis)(f)
+
+  def every(component: Component)(f: Task => Unit): Cancelable =
+    schedule(component.milliseconds.millis)(f)
+  def every(component: Component, offset: Offset[_])(f: Task => Unit): Task = ???
 }
 
 trait Cancelable {
@@ -45,15 +66,4 @@ object Cancelable {
 
 trait Task {
   def cancel(): Unit = ???
-}
-
-object Scheduler {
-  def at(time: Time)(f: => Unit): Task = ???
-  def at(time: DateTime)(f: => Unit): Task = ???
-  def at(time: Offset[Time])(f: => Unit): Task = ???
-
-  def in(time: Period)(f: => Unit): Task = ???
-
-  def every(period: Period)(f: Task => Unit): Task = ???
-  def every(period: Period, offset: Offset[_])(f: Task => Unit): Task = ???
 }

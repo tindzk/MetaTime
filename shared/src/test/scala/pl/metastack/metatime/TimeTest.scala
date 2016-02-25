@@ -54,4 +54,9 @@ class TimeTest extends FunSuite {
   test("fromNow") {
     assert(Minute(120).fromNow().format == "2 hour(s) ago")
   }
+
+  test("millis") {
+    assert(Minute(2).milliseconds() == 120000)
+    assert(Time(1, 0, 0, 0).milliseconds() == 3600000)
+  }
 }

@@ -7,8 +7,9 @@ import sbtbuildinfo.BuildInfoPlugin.autoImport._
 
 object Build extends sbt.Build {
   object Dependencies {
-    val ScalaTest = "3.0.0-M14"
-    val MetaDocs  = "0.1.1-SNAPSHOT"
+    val ScalaTest = "3.0.0-M15"
+    val MetaDocs  = "0.1.1"  // TODO Check at maven central
+    val MetaRx    = "0.1.6"  // TODO Check at maven central
   }
 
   val SharedSettings = Seq(
@@ -57,13 +58,17 @@ object Build extends sbt.Build {
     .jsSettings(
       libraryDependencies +=
         "org.scalatest" %%% "scalatest" % Dependencies.ScalaTest % "test",
+      libraryDependencies +=
+        "pl.metastack" %%% "metarx" % Dependencies.MetaRx % "test",
 
       /* Use io.js for faster compilation of test cases */
       scalaJSStage in Global := FastOptStage
     )
     .jvmSettings(
       libraryDependencies +=
-        "org.scalatest" %% "scalatest" % Dependencies.ScalaTest % "test"
+        "org.scalatest" %% "scalatest" % Dependencies.ScalaTest % "test",
+      libraryDependencies +=
+        "pl.metastack" %% "metarx" % Dependencies.MetaRx % "test"
     )
 
   lazy val js = metaTime.js
