@@ -1,6 +1,8 @@
 package pl.metastack.metatime
 
 import org.scalatest.FunSuite
+import scala.concurrent.Promise
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class DateTimeTest extends FunSuite {
   import Implicits._
@@ -24,9 +26,16 @@ class DateTimeTest extends FunSuite {
     assert(DateTime(2016,1,1,1,1,1,1) + Day(1) == DateTime(2016, 1, 2, 1, 1, 1, 1))
   }
 
-  ignore("now") {
-    assert(DateTime.now() == ???)
-  }
+  test("now") {
+      val scheduler: Scheduler = Platform.DefaultScheduler
+      val dt = DateTime.now()
+      val dtAfter = (dt + Second(5)).asInstanceOf[DateTime]
+      val p = Promise[Boolean]()
+      scheduler.at(dtAfter) {
+        p.success(Math.abs(DateTime.now().unix().value - dt.unix().value) < 10000)
+      }
+      p.future.map (res => assert(res, true))
+    }
 
   ignore("format") {
     val dateTime = DateTime(2015, 1, 1)
@@ -53,5 +62,4 @@ class DateTimeTest extends FunSuite {
     assert(DateTime(2018, 10, 1, 1, 1, 1, 1).fromNow().format =="in 2 year(s)")
     assert(DateTime(2013, 2, 1, 1, 1, 1, 1).fromNow().format =="3 year(s) ago")
   }
-
 }

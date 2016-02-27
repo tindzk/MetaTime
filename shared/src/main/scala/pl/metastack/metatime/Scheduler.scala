@@ -23,13 +23,10 @@ trait Scheduler {
 
   def at(time: Time)(f: => Unit): Cancelable =
     at(time.fromNow())(f)
-  def at(time: DateTime)(f: => Unit): Cancelable =
-    at(time.fromNow())(f)
-
-  def at(time: Offset[_])(f: => Unit): Cancelable = {
-    //TODO Remove cast asInstanceOf[Component]
-    scheduleOnce(time.component.asInstanceOf[Component].milliseconds().millis)(f)
-  }
+  def at(dateTime: DateTime)(f: => Unit): Cancelable =
+    at(dateTime.fromNow())(f)
+  def at(time: Offset[_])(f: => Unit): Cancelable =
+    scheduleOnce(Math.abs(time.component.asInstanceOf[Component].milliseconds()).millis)(f)
 
   def in(time: Time)(f: => Unit): Cancelable =
     scheduleOnce(time.milliseconds.millis)(f)
@@ -38,9 +35,12 @@ trait Scheduler {
   def in(dateTime: DateTime)(f: => Unit): Cancelable =
     scheduleOnce(dateTime.milliseconds.millis)(f)
 
-  def every(component: Component)(f: Task => Unit): Cancelable =
-    schedule(component.milliseconds.millis)(f)
-  def every(component: Component, offset: Offset[_])(f: Task => Unit): Task = ???
+  def every(time: Time)(f: => Unit): Cancelable =
+    schedule(time.milliseconds.millis)(f)
+  def every(dateTime: DateTime)(f: => Unit): Cancelable =
+    schedule(dateTime.milliseconds.millis)(f)
+  def every(time: Offset[_])(f: => Unit): Cancelable =
+    schedule(Math.abs(time.component.asInstanceOf[Component].milliseconds()).millis)(f)
 }
 
 trait Cancelable {

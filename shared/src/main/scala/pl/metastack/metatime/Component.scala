@@ -32,10 +32,6 @@ trait Component extends Ordered[Component] {
           Time(dateTime.h, dateTime.m, dateTime.s, dateTime.ms).milliseconds()
       case _: Time =>
         val time = Time(this)
-        println("Time.h ==> " + time.h)
-        println("Time.m ==> " + time.m)
-        println("Time.s ==> " + time.s)
-        println("Time.ms ==> " + time.ms)
         time.h * MillisInHour + time.m * MillisInMinute + time.s * MillisInSecond + time.ms
       case _: Date =>
         val date = Date(this)

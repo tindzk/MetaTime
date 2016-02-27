@@ -7,7 +7,7 @@ import sbtbuildinfo.BuildInfoPlugin.autoImport._
 
 object Build extends sbt.Build {
   object Dependencies {
-    val ScalaTest = "3.0.0-M15"
+    val ScalaTest = "3.0.0-M14"
     val MetaDocs  = "0.1.1"  // TODO Check at maven central
     val MetaRx    = "0.1.6"  // TODO Check at maven central
   }
