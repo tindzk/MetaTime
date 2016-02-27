@@ -33,16 +33,4 @@ class AsyncScheduler extends Scheduler {
     val task = setTimeout(initialDelay.toMillis, r)
     Cancelable(clearTimeout(task))
   }
-
-  def at(time: Time)(f: => Unit)(implicit scheduler: Scheduler): Cancelable =
-    at(time.fromNow())(f)
-
-  def at(time: DateTime)(f: => Unit)(implicit schedular: Scheduler): Cancelable =
-    at(time.fromNow())(f)
-
-  def at(time: Offset[_])(f: => Unit)(implicit scheduler: Scheduler): Cancelable = {
-    //Implement Millis in Component and replace below call 1000.millis with time.millis
-    scheduler.scheduleOnce(1000.millis)(f)
-  }
-
 }
