@@ -1,10 +1,6 @@
 package pl.metastack.metatime
 
-/**
-  * Created by SyedWaqar on 2/22/2016.
-  */
 import java.util.concurrent.{ScheduledExecutorService, TimeUnit}
-
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 

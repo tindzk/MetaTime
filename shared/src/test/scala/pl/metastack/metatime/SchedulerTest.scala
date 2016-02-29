@@ -9,10 +9,10 @@ class SchedulerTest extends AsyncFunSuite  {
     val scheduler: Scheduler = Platform.DefaultScheduler
     val timeBefore = Time.now()
     val p = Promise[Boolean]()
-      scheduler.at(Time(0, 0, 10, 0)) {
-        p.success(Math.abs(Time.now().unix().value - timeBefore.unix().value) > 10000)
-      }
-    p.future.map (res => assert(res, true))
+    scheduler.at(Time(0, 0, 10, 0)) {
+      p.success(Math.abs((Time.now() - timeBefore).unix().value) > 10000)
+    }
+    p.future.map(res => assert(res, true))
   }
 
   test("Schedule at DateTime)") {
@@ -20,10 +20,10 @@ class SchedulerTest extends AsyncFunSuite  {
     val dt = DateTime.now()
     val dtAfter = (dt + Second(5)).asInstanceOf[DateTime]
     val p = Promise[Boolean]()
-      scheduler.at(dtAfter) {
-      p.success(Math.abs(DateTime.now().unix().value - dt.unix().value) < 10000)
+    scheduler.at(dtAfter) {
+      p.success((DateTime.now() - dt).unix().value < 10000)
     }
-    p.future.map (res => assert(res, true))
+    p.future.map(res => assert(res, true))
   }
 
   test("Schedule at Offset") {
@@ -32,9 +32,9 @@ class SchedulerTest extends AsyncFunSuite  {
     val offset = Offset(Second(10))
     val p = Promise[Boolean]()
     scheduler.at(offset) {
-      p.success(Math.abs(Time.now().unix().value - timeBefore.unix().value) > 10000)
+      p.success(Math.abs((Time.now() - timeBefore).unix().value) > 10000)
     }
-    p.future.map (res => assert(res, true))
+    p.future.map(res => assert(res, true))
   }
 
   ignore("Schedule at Time Every") {
@@ -42,9 +42,9 @@ class SchedulerTest extends AsyncFunSuite  {
     val timeBefore = Time.now()
     val p = Promise[Boolean]()
     scheduler.every(Time(0, 0, 10, 0)) {
-      p.success(Math.abs(Time.now().unix().value - timeBefore.unix().value) > 10000)
+      p.success(Math.abs((Time.now() - timeBefore).unix().value) > 10000)
     }
-    p.future.map (res => assert(res, true))
+    p.future.map(res => assert(res, true))
   }
 
   ignore("Schedule at DateTime Every)") {
@@ -53,9 +53,9 @@ class SchedulerTest extends AsyncFunSuite  {
     val dtAfter = (dt + Second(5)).asInstanceOf[DateTime]
     val p = Promise[Boolean]()
     scheduler.every(dtAfter) {
-      p.success(Math.abs(DateTime.now().unix().value - dt.unix().value) < 10000)
+      p.success(DateTime.now().unix().value - dt.unix().value < 10000)
     }
-    p.future.map (res => assert(res, true))
+    p.future.map(res => assert(res, true))
   }
 
   ignore("Schedule at Offset Every") {
@@ -64,8 +64,8 @@ class SchedulerTest extends AsyncFunSuite  {
     val offset = Offset(Second(10))
     val p = Promise[Boolean]()
     scheduler.every(offset) {
-      p.success(Math.abs(Time.now().unix().value - timeBefore.unix().value) > 10000)
+      p.success(Math.abs((Time.now() - timeBefore).unix().value) > 10000)
     }
-    p.future.map (res => assert(res, true))
+    p.future.map(res => assert(res, true))
   }
 }

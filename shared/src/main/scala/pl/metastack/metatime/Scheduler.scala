@@ -39,8 +39,8 @@ trait Scheduler {
     schedule(time.milliseconds.millis)(f)
   def every(dateTime: DateTime)(f: => Unit): Cancelable =
     schedule(dateTime.milliseconds.millis)(f)
-  def every(time: Offset[_])(f: => Unit): Cancelable =
-    schedule(Math.abs(time.component.asInstanceOf[Component].milliseconds()).millis)(f)
+  def every(time: Offset[Component])(f: => Unit): Cancelable =
+    schedule(Math.abs(time.component.milliseconds()).millis)(f)
 }
 
 trait Cancelable {

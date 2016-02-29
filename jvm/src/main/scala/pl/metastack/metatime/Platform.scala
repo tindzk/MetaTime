@@ -1,12 +1,6 @@
 package pl.metastack.metatime
 
-/**
-  * Created by SyedWaqar on 2/22/2016.
-  */
-//package pl.metastack.metarx
-
 import java.util.concurrent.Executors
-
 import scala.concurrent.ExecutionContext
 
 object Platform {
