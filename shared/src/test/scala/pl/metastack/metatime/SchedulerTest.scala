@@ -9,7 +9,7 @@ class SchedulerTest extends AsyncFunSuite  {
     val timeBefore = Time.now()
     val p = Promise[Boolean]()
     scheduler.at(Time(0, 0, 10, 0)) {
-      p.success((Time.now() - timeBefore).unix().value > 10000)
+      p.success((Time.now() - timeBefore).unix().value >= 10000)
     }
     p.future.map(assert(_))
   }
@@ -31,7 +31,7 @@ class SchedulerTest extends AsyncFunSuite  {
     val offset = Offset(Second(10))
     val p = Promise[Boolean]()
     scheduler.at(offset) {
-      p.success((Time.now() - timeBefore).unix().value > 10000)
+      p.success((Time.now() - timeBefore).unix().value >= 10000)
     }
     p.future.map(assert(_))
   }
@@ -41,7 +41,7 @@ class SchedulerTest extends AsyncFunSuite  {
     val timeBefore = Time.now()
     val p = Promise[Boolean]()
     scheduler.every(Time(0, 0, 10, 0)) {
-      p.success((Time.now() - timeBefore).unix().value > 10000)
+      p.success((Time.now() - timeBefore).unix().value >= 10000)
     }
     p.future.map(assert(_))
   }
@@ -63,7 +63,7 @@ class SchedulerTest extends AsyncFunSuite  {
     val offset = Offset(Second(10))
     val p = Promise[Boolean]()
     scheduler.every(offset) {
-      p.success((Time.now() - timeBefore).unix().value > 10000)
+      p.success((Time.now() - timeBefore).unix().value >= 10000)
     }
     p.future.map(assert(_))
   }
