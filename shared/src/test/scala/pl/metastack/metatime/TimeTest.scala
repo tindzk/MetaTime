@@ -46,7 +46,7 @@ class TimeTest extends FunSuite {
     val timeBefore = Time.now()
     val p = Promise[Boolean]()
     scheduler.at(Time(0, 0, 10, 0)) {
-      p.success(Math.abs(Time.now().unix().value - timeBefore.unix().value) > 10000)
+      p.success((Time.now() - timeBefore).unix().value > 10000)
     }
     p.future.map (res => assert(res, true))
   }
@@ -57,7 +57,7 @@ class TimeTest extends FunSuite {
   }
 
   test("fromNow") {
-    assert(Minute(120).fromNow().format == "2 hour(s) ago")
+    assert(Minute(120).fromNow.format == "2 hour(s) ago")
   }
 
   test("millis") {

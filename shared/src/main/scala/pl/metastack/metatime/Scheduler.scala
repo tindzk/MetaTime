@@ -22,9 +22,9 @@ trait Scheduler {
   def currentTimeMillis(): Long = System.currentTimeMillis()
 
   def at(time: Time)(f: => Unit): Cancelable =
-    at(time.fromNow())(f)
+    at(time.fromNow)(f)
   def at(dateTime: DateTime)(f: => Unit): Cancelable =
-    at(dateTime.fromNow())(f)
+    at(dateTime.fromNow)(f)
   def at(time: Offset[_])(f: => Unit): Cancelable =
     scheduleOnce(Math.abs(time.component.asInstanceOf[Component].milliseconds()).millis)(f)
 

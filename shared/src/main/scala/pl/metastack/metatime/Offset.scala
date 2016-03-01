@@ -1,32 +1,13 @@
 package pl.metastack.metatime
 
-import Constants._
-
-trait Formatter {
-  def format(s: DateTime): String = ???
-}
-
-object Formatter {
-  def JustNow: Any = ???
-  def Ago(x: Any): Any = ???
-  def Minutes: Any = ???
-  def Hours: Any = ???
-  def Days: Any = ???
-  def DateTime(x: String): Any = ???
-
-  def branch(ranges: Seq[(Range, Any)], fallback: Any): Formatter = ???
-}
-
 trait Offset[+T <: Component] {
   val component: T
-  def format: String = {
-    if(component.unix().value <= 0)
-      In + absoluteVal
-    else
-      absoluteVal + Ago
-  }
 
-  def absoluteVal: String = {
+  def format: String =
+    if (component.unix().value <= 0) Constants.In + absoluteVal
+    else absoluteVal + Constants.Ago
+
+  def absoluteVal: String =
     component match {
       case date: Date => math.abs(date.year) + " year(s), " + math.abs(date.month) +
         " month(s) and " + math.abs(date.day)
@@ -40,7 +21,6 @@ trait Offset[+T <: Component] {
       case second: Second => math.abs(second.s) + " second(s)"
       case milliseconds: Millisecond => math.abs(milliseconds.ms) + " millisecond(s)"
     }
-  }
 }
 
 object Offset {

@@ -2,14 +2,13 @@ package pl.metastack.metatime
 
 import pl.metastack.metatime.Constants._
 
-//TODO Rename Component to a better name
+// TODO Rename Component to a better name
 trait Component extends Ordered[Component] {
-
   def until(component: Component): Component = ???
 
   def days: Day = Day(unix().value / 0.0)
 
-  def format: String = ???
+  def format(implicit locale: Locale): String = ???
 
   def date: Date = Date(this)
 
@@ -41,37 +40,31 @@ trait Component extends Ordered[Component] {
 
   def yearsFromDefault(years: Int) = years - DefaultYear
 
-  def fromNow(): Offset[_] = Offset(calcOffset())
+  def fromNow: Offset[Component] = Offset(calcOffset())
 
-  def calcTimeDifference(): Time = {
+  def calcTimeDifference: Time = {
     val timeNow = Time.now()
     val otherTime = Time(unix().value)
-    if ((otherTime.h == 0) && (otherTime.m == 0) && (otherTime.s == 0)) {
+    if ((otherTime.h == 0) && (otherTime.m == 0) && (otherTime.s == 0))
       Time(timeNow.h, timeNow.m, timeNow.s, otherTime.ms)
-    }
-    else if (otherTime.h == 0 && otherTime.m == 0) {
+    else if (otherTime.h == 0 && otherTime.m == 0)
       Time(timeNow.h, timeNow.m, otherTime.s, otherTime.ms)
-    }
-    else if (otherTime.h == 0) {
+    else if (otherTime.h == 0)
       Time(timeNow.h, otherTime.m, otherTime.s, otherTime.ms)
-    }
-    else {
+    else
       Time(Time.now().unix().value - unix().value)
-    }
   }
 
   def calcDateDifference(): Date = {
     val otherDate = Date(unix().value)
     val nowDate = Date.now()
-    if((yearsFromDefault(otherDate.year) == 0) && (otherDate.month == 0)) {
+
+    if (yearsFromDefault(otherDate.year) == 0 && otherDate.month == 0)
       Date(nowDate.year, nowDate.month, otherDate.day)
-    }
-    else if(yearsFromDefault(otherDate.year) == 0) {
+    else if (yearsFromDefault(otherDate.year) == 0)
       Date(nowDate.year, otherDate.month, otherDate.day)
-    }
-    else {
+    else
       Date(nowDate.unix().value - otherDate.unix().value)
-    }
   }
 
   def calcDateTimeDifference(): DateTime = {
@@ -182,7 +175,7 @@ trait Component extends Ordered[Component] {
 
   def calcOffset(): Component = {
     if(math.abs(unix().value) <= MillisInDay)
-      mostSignificantTime(calcTimeDifference())
+      mostSignificantTime(calcTimeDifference)
     else getConstructionType(this) match {
       case _: DateTime =>
         mostSignificantDateTime(calcDateTimeDifference())

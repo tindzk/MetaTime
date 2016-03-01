@@ -1,7 +1,8 @@
 package pl.metastack.metatime
 
 trait DateTime extends Time with Date {
-  def format(fmt: String): String = ???
+  def format(pattern: Pattern): String = pattern.format(this)
+
   def timestamp: Timestamp = ???
 
   override def equals(that: Any): Boolean =
