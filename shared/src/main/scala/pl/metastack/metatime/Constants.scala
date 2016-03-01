@@ -21,6 +21,8 @@ object Constants {
   final val SecondsInDay = HoursInDay * SecondsInHour
   final val MillisInDay = HoursInDay * MillisInHour
   final val DefaultYear = 1970
+  final val DaysInMonth = 30
+  final val DaysInYear = 365
 
   final val In = "in "
   final val Ago = " ago"
