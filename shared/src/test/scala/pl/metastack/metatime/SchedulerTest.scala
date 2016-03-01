@@ -1,18 +1,17 @@
 package pl.metastack.metatime
 
-import org.scalatest.{AsyncFunSuite}
-import scala.concurrent.{Promise}
+import org.scalatest.AsyncFunSuite
+import scala.concurrent.Promise
 
 class SchedulerTest extends AsyncFunSuite  {
-
   test("Schedule at Time") {
     val scheduler: Scheduler = Platform.DefaultScheduler
     val timeBefore = Time.now()
     val p = Promise[Boolean]()
     scheduler.at(Time(0, 0, 10, 0)) {
-      p.success(Math.abs((Time.now() - timeBefore).unix().value) > 10000)
+      p.success((Time.now() - timeBefore).unix().value > 10000)
     }
-    p.future.map(res => assert(res, true))
+    p.future.map(assert(_))
   }
 
   test("Schedule at DateTime)") {
@@ -23,7 +22,7 @@ class SchedulerTest extends AsyncFunSuite  {
     scheduler.at(dtAfter) {
       p.success((DateTime.now() - dt).unix().value < 10000)
     }
-    p.future.map(res => assert(res, true))
+    p.future.map(assert(_))
   }
 
   test("Schedule at Offset") {
@@ -32,9 +31,9 @@ class SchedulerTest extends AsyncFunSuite  {
     val offset = Offset(Second(10))
     val p = Promise[Boolean]()
     scheduler.at(offset) {
-      p.success(Math.abs((Time.now() - timeBefore).unix().value) > 10000)
+      p.success((Time.now() - timeBefore).unix().value > 10000)
     }
-    p.future.map(res => assert(res, true))
+    p.future.map(assert(_))
   }
 
   ignore("Schedule at Time Every") {
@@ -42,9 +41,9 @@ class SchedulerTest extends AsyncFunSuite  {
     val timeBefore = Time.now()
     val p = Promise[Boolean]()
     scheduler.every(Time(0, 0, 10, 0)) {
-      p.success(Math.abs((Time.now() - timeBefore).unix().value) > 10000)
+      p.success((Time.now() - timeBefore).unix().value > 10000)
     }
-    p.future.map(res => assert(res, true))
+    p.future.map(assert(_))
   }
 
   ignore("Schedule at DateTime Every)") {
@@ -55,7 +54,7 @@ class SchedulerTest extends AsyncFunSuite  {
     scheduler.every(dtAfter) {
       p.success(DateTime.now().unix().value - dt.unix().value < 10000)
     }
-    p.future.map(res => assert(res, true))
+    p.future.map(assert(_))
   }
 
   ignore("Schedule at Offset Every") {
@@ -64,8 +63,8 @@ class SchedulerTest extends AsyncFunSuite  {
     val offset = Offset(Second(10))
     val p = Promise[Boolean]()
     scheduler.every(offset) {
-      p.success(Math.abs((Time.now() - timeBefore).unix().value) > 10000)
+      p.success((Time.now() - timeBefore).unix().value > 10000)
     }
-    p.future.map(res => assert(res, true))
+    p.future.map(assert(_))
   }
 }
