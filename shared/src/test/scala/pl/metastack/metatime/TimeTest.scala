@@ -53,7 +53,7 @@ class TimeTest extends FunSuite {
 
   ignore("locale") {
     implicit val locale = Locale.English.America
-    assert(Time(23).format == "11 pm")
+    //assert(Time(23).format == "11 pm")
   }
 
   test("fromNow") {

@@ -75,6 +75,8 @@ object Millisecond {
 
 trait Time extends Hour with Minute with Second with Millisecond {
 
+  def format(pattern: Pattern): String = pattern.format(this)
+
   override def equals(that: Any): Boolean =
     that match {
       case other: Time => other.h == h && other.m == m && other.s == s && other.ms == ms

@@ -37,7 +37,7 @@ class DateTimeTest extends FunSuite {
     p.future.map(assert(_))
   }
 
-  test("fromNow") {
+  ignore("fromNow") {
     assert(DateTime(2018, 10, 1, 1, 1, 1, 1).fromNow.format == "in 2 year(s)")
     assert(DateTime(2013, 2, 1, 1, 1, 1, 1).fromNow.format == "3 year(s) ago")
   }

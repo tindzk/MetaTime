@@ -14,13 +14,28 @@ trait Component extends Ordered[Component] {
 
   def dateTime: DateTime = DateTime(this)
 
-  def to(until: Component): Range = ???
+  def to(until: Component): Range = {
+    Range(unix().value.toInt, until.unix().value.toInt)
+  }
 
   def unix(): Unix
 
   override def compare(that: Component): Int = {
     unix().value.compare(that.unix().value)
   }
+
+  def weekDay(): Int = {
+    val thisComp = getConstructionType(this)
+    thisComp match {
+      case _: DateTime =>
+        val dateTime = DateTime(this)
+        calcWeekDay(Date(dateTime.year, dateTime.month, dateTime.day))
+      case _: Date =>
+        calcWeekDay(Date(this))
+    }
+  }
+
+  def calcWeekDay(date: Date): Int = date.daysOf(date) % 7
 
   def milliseconds(): Long = {
     val thisComp = getConstructionType(this)
@@ -174,7 +189,7 @@ trait Component extends Ordered[Component] {
   }
 
   def calcOffset(): Component = {
-    if(math.abs(unix().value) <= MillisInDay)
+    if(math.abs(unix().value) < MillisInDay)
       mostSignificantTime(calcTimeDifference)
     else getConstructionType(this) match {
       case _: DateTime =>
@@ -253,7 +268,7 @@ trait Component extends Ordered[Component] {
 
   def daysOf(component: Component) : Int = {
     component match {
-      case d: Date => (d.day).toInt + daysOfMonth(d.month) + daysOfYear(d.year)
+      case d: Date => d.day.toInt + daysOfMonth(d.month) + daysOfYear(d.year)
       case m: Month => daysOfMonth(m.month)
       case y: Year => daysOfYear(y.year)
     }

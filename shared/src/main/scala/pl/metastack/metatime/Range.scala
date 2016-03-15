@@ -1,5 +1,4 @@
 package pl.metastack.metatime
 
-trait Range {
-
+case class Range (lowerBound: Long, upperBound: Long) {
 }

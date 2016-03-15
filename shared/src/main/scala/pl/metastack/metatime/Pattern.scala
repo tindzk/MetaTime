@@ -1,6 +1,6 @@
 package pl.metastack.metatime
 
-case class Pattern(parts: Seq[DateTime => String] = Nil) {
+case class Pattern(parts: Seq[Component => String] = Nil) {
   def string(s: String): Pattern = add(_ => s)
 
   def dash : Pattern = string("-")
@@ -11,36 +11,58 @@ case class Pattern(parts: Seq[DateTime => String] = Nil) {
 
   def year(short: Boolean = false): Pattern =
     add(dt =>
-      if (!short) dt.year.toString
-      else        dt.year.toString.drop(2))
+      if (!short) dt.asInstanceOf[DateTime].year.toString
+      else        dt.asInstanceOf[DateTime].year.toString.drop(2))
 
-  def month: Pattern = add(_.month.toString)
+  def month: Pattern = add(_.asInstanceOf[DateTime].month.toString)
 
-  def monthName(short: Boolean = false): Pattern = ???
+  val months = Seq("January", "February", "March",
+    "April", "May", "June", "July", "August",
+    "September", "October", "November", "December")
 
-  def day: Pattern = add(_.day.toString)
+  val weekDays = Seq("Thursday", "Friday", "Saturday",
+    "Sunday", "Monday", "Tuesday", "Wednesday")
 
-  def amPm: Pattern = ???
+  def monthName(short: Boolean = false): Pattern = {
+    add(dateTime =>
+      months(dateTime.asInstanceOf[DateTime].month - 1))
+  }
 
-  def hour(amPm: Boolean = false): Pattern = add(_.h.toString)
-  def minute: Pattern = add(_.m.toString.padTo(2, '0'))
-  def second: Pattern = add(_.s.toString)
+  def day: Pattern = add(_.asInstanceOf[DateTime].day.toInt.toString)
+
+  def amPm: Pattern =
+    add(dt =>
+      if (dt.asInstanceOf[Time].h > 12) "PM"
+      else           "AM")
+
+  def hour(amPm: Boolean = false): Pattern = add(_.asInstanceOf[Time].h.toString)
+  def minute: Pattern = add(dt =>
+    f"${dt.asInstanceOf[Time].m}%02d".toString)
+  def second: Pattern = add(_.asInstanceOf[Time].s.toString)
 
   /** Fractional seconds padded to `digits` */
-  def secondsFract(digits: Int): Pattern = ???
+  def secondsFract(digits: Int): Pattern = {
+    add(_.asInstanceOf[Time].ms.toString)
+  }
 
   /**
     * Day of the week such as Monday, Tuesday, Wednesday etc.
     * @param short Short version of weekdays (Mon, Tue, Wed)
     */
-  def weekDay(short: Boolean = false): Pattern = ???
+  def weekDay(short: Boolean = false): Pattern = {
+    add(dateTime =>
+      weekDays(dateTime.weekDay() - 1))
+  }
 
   def newLine: Pattern = add(_ => "\n")
 
-  def add(item: DateTime => String): Pattern = copy(parts = parts ++ Seq(item))
+  def add(item: Component => String): Pattern = copy(parts = parts ++ Seq(item))
 
   def format(dateTime: DateTime): String =
     parts.foldLeft("") { case (string, format) => string + format(dateTime) }
+
+  def format(time: Time): String =
+    parts.foldLeft("") { case (string, format) => string + format(time) }
 
   def concat(pattern: Pattern): Pattern = Pattern(parts ++ pattern.parts)
 
@@ -54,7 +76,7 @@ object Pattern {
     .string("Z")
 
   // Tuesday, 1 March 2016
-  val DefaultDate = Pattern().weekDay().comma.day.space.monthName().space.year()
+  val DefaultDate = Pattern().weekDay().comma.space.day.space.monthName().space.year()
 
   // 6:57 PM
   val DefaultTime = Pattern().hour(amPm = true).colon.minute.space.amPm
@@ -69,5 +91,16 @@ object Pattern {
   val HoursAgo  : Pattern = ago(Pattern().minute.space.string("hour(s)"))
   val DaysAgo   : Pattern = ago(Pattern().minute.space.string("day(s)"))
 
-  def branch(ranges: Seq[(Range, Pattern)], fallback: Pattern): Pattern = ???
+  def branch(ranges: Seq[(Range, Pattern)], fallback: Pattern): Pattern = {
+    println("Inside BRANCH ")
+    for ((range, pattern) <- ranges) {
+      println("Lower Bound => " + range.lowerBound)
+      println("Upper Bound => " + range.upperBound)
+      //if(unix.value >= range.lowerBound) & (unix.value() <= range.upperBound) {
+      //  pattern
+      //  break
+     // }
+    }
+    fallback
+  }
 }
