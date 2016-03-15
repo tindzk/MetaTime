@@ -20,10 +20,16 @@ class DateTimeTest extends FunSuite {
     assert(Year(2015).dateTime == DateTime(2015, 1, 1, 0, 0, 0))
   }
 
-  test("dateTimePlus") {
+  test("Add day") {
     assert(
       DateTime(2016, 1, 1, 1, 1, 1, 1) + Day(1) ==
       DateTime(2016, 1, 2, 1, 1, 1, 1))
+  }
+
+  test("Add second") {
+    val dt = DateTime.now()
+    val dtAfter = dt + Second(1)
+    assert(dtAfter.unix().value == dt.unix().value + 1000)
   }
 
   test("now") {

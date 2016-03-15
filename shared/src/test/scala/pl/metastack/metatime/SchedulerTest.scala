@@ -15,9 +15,11 @@ class SchedulerTest extends AsyncFunSuite {
     p.future.map(assert(_))
   }
 
-  ignore("Schedule once at DateTime") {
+  test("Schedule once at DateTime") {
     val dt = DateTime.now()
     val dtAfter = (dt + Second(1)).asInstanceOf[DateTime]
+    assert(dtAfter.unix().value == dt.unix().value + 1000)
+
     val p = Promise[Boolean]()
     scheduler.at(dtAfter) {
       p.success((DateTime.now() - dt).unix().value >= 1000)
