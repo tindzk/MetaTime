@@ -41,6 +41,10 @@ trait Scheduler {
     schedule(dateTime.milliseconds.millis)(f)
   def every(time: Offset[Component])(f: => Unit): Cancelable =
     schedule(Math.abs(time.component.milliseconds()).millis)(f)
+
+  override def toString: String = {
+    "Cancelable Task"
+  }
 }
 
 trait Cancelable {

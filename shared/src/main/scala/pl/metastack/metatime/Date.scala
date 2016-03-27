@@ -64,6 +64,9 @@ trait Date extends Year with Month with Day {
       case _ => false
     }
 
+  override def toString: String = year + "-" + month + "-" + day.toInt
+
+
   override def unix(): Unix = Unix(
     Year(year).unix().value +
     Month(month).unix().value +
@@ -126,20 +129,27 @@ object Date {
   }
 
   def milliToDays(milliSeconds: Long, flagNow: Boolean): Int = {
-      if((milliSeconds % (60 * 60 * 24 * 1000) > 0) && (flagNow)){
-        (((milliSeconds / (60 * 60 * 24 * 1000))).toInt) + 1
+      if((milliSeconds % (60 * 60 * 24 * 1000) > 0) && flagNow){
+        (milliSeconds / (60 * 60 * 24 * 1000)).toInt + 1
       }
-      else { ((milliSeconds / (60 * 60 * 24 * 1000))).toInt }
+      else {
+        (milliSeconds / (60 * 60 * 24 * 1000)).toInt
+      }
     }
 
   def calculateDate(totalDays: Int): Date =
   {
-    val year = yearsPassed(math.abs(totalDays))
-    val daysOfThisYear = daysPassed(math.abs(totalDays))
-    val month = findMonth(daysOfThisYear, year)
-    val day = findDay(daysOfThisYear, year)
-    if(totalDays <= 0) Date(-year, -month, -day)
-    else Date(year, month, day)
+    if(totalDays == 0) {
+      Date(1970, 0, 0)
+    }
+    else {
+      val year = yearsPassed(math.abs(totalDays))
+      val daysOfThisYear = daysPassed(math.abs(totalDays))
+      val month = findMonth(daysOfThisYear, year)
+      val day = findDay(daysOfThisYear, year)
+      if (totalDays <= 0) Date(-year, -month, -day)
+      else Date(year, month, day)
+    }
   }
 
   def now(): Date = {
@@ -165,7 +175,7 @@ object Date {
 
   def apply(y: Int = 0,
     m: Int = 1,
-    d: Double = 1.0): Date = new Date {
+    d: Double = 0.0): Date = new Date {
       override val year: Int = y
       override val month: Int = m
       override val day: Double = d

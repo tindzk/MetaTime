@@ -48,7 +48,8 @@ object Manual extends App with Shared {
       "li" -> ListItem)
 
   val rawTrees = Seq(
-    "introduction", "development", "support"
+    "introduction", "type-safe-dsl", "scheduler",
+    "datetime-formatting", "scalajs-support", "development", "support"
   ).map(chapter => s"manual/$chapter.md")
    .map(file =>
       Markdown.loadFileWithExtensions(file,
@@ -120,8 +121,8 @@ object Manual extends App with Shared {
   links.map { case (from, to) =>
     Paths.get(from) -> Paths.get(to)
   }.foreach { case (from, to) =>
-    if (Files.exists(from)) Files.delete(from)
-    Files.createSymbolicLink(from, to) //TODO
+    //if (Files.exists(from)) Files.delete(from)
+    //Files.createSymbolicLink(from, to)
   }
 
   /* Replace images */

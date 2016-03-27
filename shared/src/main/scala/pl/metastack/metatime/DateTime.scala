@@ -1,7 +1,7 @@
 package pl.metastack.metatime
 
 trait DateTime extends Time with Date {
-  override def format(pattern: Pattern): String = pattern.format(this)
+  def format(pattern: PatternDateTime): String = pattern.format(this)
 
   def timestamp: Timestamp = ???
 
@@ -11,6 +11,11 @@ trait DateTime extends Time with Date {
         h == other.h && m == other.m && s == other.s && ms == other.ms
       case _ => false
     }
+
+  override def toString: String = {
+    year + "-" + month + "-" + day.toInt + " " +
+    h + ":" + m + ":" + s + ":" + ms
+  }
 
   override def unix(): Unix = Unix(
     Year(year).unix().value +
@@ -46,7 +51,7 @@ object DateTime {
       override val ms: Int = millisecond
     }
 
-  def apply(yr: Int = 0,  mo: Int = 1, dy: Double = 1.0,
+  def apply(yr: Int = 0,  mo: Int = 1, dy: Double = 0.0,
             hr: Int = 0, min: Int = 0, sec: Int = 0,
             milli: Int = 0): DateTime = new DateTime {
     override val year: Int = yr
@@ -61,7 +66,7 @@ object DateTime {
   def apply(): DateTime = new DateTime {
     override val year: Int = 0
     override val month: Int = 1
-    override val day: Double = 1.0
+    override val day: Double = 0.0
     override val h: Int = 0
     override val m: Int = 0
     override val s: Int = 0
@@ -74,25 +79,25 @@ object DateTime {
         DateTime(dT.year, dT.month, dT.day, dT.h, dT.m, dT.s, dT.ms)
 
       case tempYear: Year =>
-        DateTime(tempYear.year, 1, 1, 0, 0, 0, 0)
+        DateTime(tempYear.year, 1, 0, 0, 0, 0, 0)
 
       case tempMonth: Month =>
-        DateTime(0, tempMonth.month, 1, 0, 0, 0, 0)
+        DateTime(0, tempMonth.month, 0, 0, 0, 0, 0)
 
       case tempDay: Day =>
         DateTime(0, 1, tempDay.day, 0, 0, 0, 0)
 
       case tempHour: Hour =>
-        DateTime(0, 1, 1, tempHour.h, 0, 0, 0)
+        DateTime(0, 1, 0, tempHour.h, 0, 0, 0)
 
       case tempMinute: Minute =>
-        DateTime(0, 1, 1, 0, tempMinute.m, 0, 0)
+        DateTime(0, 1, 0, 0, tempMinute.m, 0, 0)
 
       case tempSecond: Second =>
-        DateTime(0, 1, 1, 0, 0, tempSecond.s, 0)
+        DateTime(0, 1, 0, 0, 0, tempSecond.s, 0)
 
       case tempMilliSecond: Millisecond =>
-        DateTime(0, 1, 1, 0, 0, 0, tempMilliSecond.ms)
+        DateTime(0, 1, 0, 0, 0, 0, tempMilliSecond.ms)
     }
   }
 }

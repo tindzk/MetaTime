@@ -17,7 +17,7 @@ class DateTimeTest extends FunSuite {
   }
 
   test("date") {
-    assert(Year(2015).dateTime == DateTime(2015, 1, 1, 0, 0, 0))
+    assert(Year(2015).dateTime == DateTime(2015, 1, 0, 0, 0, 0))
   }
 
   test("Add day") {

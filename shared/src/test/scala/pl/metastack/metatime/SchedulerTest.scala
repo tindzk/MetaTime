@@ -19,7 +19,6 @@ class SchedulerTest extends AsyncFunSuite {
     val dt = DateTime.now()
     val dtAfter = (dt + Second(1)).asInstanceOf[DateTime]
     assert(dtAfter.unix().value == dt.unix().value + 1000)
-
     val p = Promise[Boolean]()
     scheduler.at(dtAfter) {
       p.success((DateTime.now() - dt).unix().value >= 1000)
@@ -41,8 +40,7 @@ class SchedulerTest extends AsyncFunSuite {
     val timeBefore = Time.now()
     val p = Promise[Boolean]()
     scheduler.every(Time(0, 0, 1, 0)) {
-      // TODO Check whether every() is called more than once in the same intervals
-      p.success((Time.now() - timeBefore).unix().value >= 1000)
+      p.success(Math.abs((Time.now() - timeBefore).unix().value) >= 1000)
     }
     p.future.map(assert(_))
   }
@@ -62,7 +60,7 @@ class SchedulerTest extends AsyncFunSuite {
     val offset = Offset(Second(1))
     val p = Promise[Boolean]()
     scheduler.every(offset) {
-      p.success((Time.now() - timeBefore).unix().value >= 1000)
+      p.success(Math.abs((Time.now() - timeBefore).unix().value) >= 1000)
     }
     p.future.map(assert(_))
   }

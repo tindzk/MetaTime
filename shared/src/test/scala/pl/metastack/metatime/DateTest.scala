@@ -26,10 +26,12 @@ class DateTest extends FunSuite {
   }
 
   test("add") {
-    assert(Date(2015) + 1.day == Date(2015, 1, 2))
+    val dt = (Date(2015) + 1.day).asInstanceOf[Date]
+    assert(Year(2015) + 1.day == Date(2015, 1, 1))
   }
-
-  test("datePlus") {
+  //TODO forbid addition of absolute dates in future
+  ignore("datePlus") {
+    val date = (Date(2015, 1, 1) + Date(2015, 1, 1)).asInstanceOf[Date]
     assert(Date(2015, 1, 1) + Date(2015, 1, 1) == Date(2060, 1, 2))
   }
 
