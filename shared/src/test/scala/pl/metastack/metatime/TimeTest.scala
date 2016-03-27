@@ -51,16 +51,6 @@ class TimeTest extends FunSuite {
     p.future.map(assert(_))
   }
 
-  /*test("now") {
-    val scheduler: Scheduler = Platform.DefaultScheduler
-    val timeBefore = Time.now()
-    val p = Promise[Boolean]()
-    scheduler.at(Time(0, 0, 10, 0)) {
-      p.success((Time.now() - timeBefore).unix().value > 10000)
-    }
-    p.future.map (res => assert(res, true))
-  }*/
-
   ignore("locale") {
     implicit val locale = Locale.English.America
     //assert(Time(23).format == "11 pm")

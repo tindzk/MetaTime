@@ -121,8 +121,8 @@ object Manual extends App with Shared {
   links.map { case (from, to) =>
     Paths.get(from) -> Paths.get(to)
   }.foreach { case (from, to) =>
-    //if (Files.exists(from)) Files.delete(from)
-    //Files.createSymbolicLink(from, to)
+    if (Files.exists(from)) Files.delete(from)
+    Files.createSymbolicLink(from, to)
   }
 
   /* Replace images */
