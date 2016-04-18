@@ -10,14 +10,11 @@ libraryDependencies += "pl.metastack" %%  "metatime" % "%version%"  // Scala
 libraryDependencies += "pl.metastack" %%% "metatime" % "%version%"  // Scala.js
 ```
 
-## Example
-[scala type="section" value="introduction" file="Examples"]
-
-## Features
+## Key Features
 * Type-safe DSL
 * Scheduler
-* Date/time formatting
+* Date / Time formatting
+* Scala.js support
 * Duration
 * Timezones
-* Scala.js support
 

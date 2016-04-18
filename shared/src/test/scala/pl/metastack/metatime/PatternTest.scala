@@ -5,9 +5,14 @@ import org.scalatest.FunSuite
 class PatternTest extends FunSuite {
   import Implicits._
 
-  ignore("Format") {
+  test("FormatDateTime") {
     val dateTime = DateTime(2015, 1, 1)
-    assert(dateTime.format(Pattern.DefaultDate) == "Thursday, 1 January 2015")
+    assert(dateTime.format(PatternDateTime.DefaultDate) == "Thursday, 1 January 2015")
+  }
+
+  test("FormatTime") {
+    val time = Time(11, 1, 0, 0)
+    assert(time.format(PatternTime.DefaultTime) == "11:01 AM")
   }
 
   ignore("Format from now") {
@@ -15,20 +20,22 @@ class PatternTest extends FunSuite {
     assert(offset.format == s"1 day(s) from now")
   }
 
-  ignore("Custom pattern") {
-    val formatter = Pattern.branch(Seq(
-      (0.seconds to 1.minute) -> Pattern.JustNow,
-      (1.minute  to 1.hour  ) -> Pattern.MinutesAgo,
-      (1.hour    to 1.day   ) -> Pattern.HoursAgo,
-      (1.day     to 1.week  ) -> Pattern.DaysAgo
-    ), Pattern.DefaultDateTime)
+  test("Custom pattern") {
+    val dateTime =  DateTime(2016, 6, 1, 0, 0, 0, 0)
+    val formatter = PatternDateTime.branch(Seq(
+      (0.seconds to 1.minute) -> PatternDateTime.JustNow,
+      (1.minute  to 59.minute  ) -> PatternDateTime.MinutesAgo,
+      (59.minute    to 1.day   ) -> PatternDateTime.HoursAgo,
+      (1.day     to 1.week  ) -> PatternDateTime.DaysAgo
+    ), PatternDateTime.DefaultDateTime)
+
+    val dt = DateTime(2015, 1, 1)
 
     val now = DateTime.now()
-    assert(formatter.format(now) == "just now")
     assert(formatter.format((now - 5.minutes).asInstanceOf[DateTime]) == "5 minute(s) ago")
     assert(formatter.format((now - 60.minutes).asInstanceOf[DateTime]) == "1 hour(s) ago")
 
     val twoWeeks = (now - 2.weeks).asInstanceOf[DateTime]
-    assert(formatter.format(twoWeeks) == Pattern.DefaultDateTime.format(twoWeeks))
+    assert(formatter.format(twoWeeks) == PatternDateTime.DefaultDateTime.format(twoWeeks))
   }
 }

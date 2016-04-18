@@ -14,13 +14,30 @@ trait Component extends Ordered[Component] {
 
   def dateTime: DateTime = DateTime(this)
 
-  def to(until: Component): Range = ???
+  def isLeapYear(year: Int) = year % 4 == 0
+
+  def to(until: Component): Range = {
+    Range(unix().value.toInt, until.unix().value.toInt)
+  }
 
   def unix(): Unix
 
   override def compare(that: Component): Int = {
     unix().value.compare(that.unix().value)
   }
+
+  def weekDay(): Int = {
+    val thisComp = getConstructionType(this)
+    thisComp match {
+      case _: DateTime =>
+        val dateTime = DateTime(this)
+        calcWeekDay(Date(dateTime.year, dateTime.month, dateTime.day))
+      case _: Date =>
+        calcWeekDay(Date(this))
+    }
+  }
+
+  def calcWeekDay(date: Date): Int = date.daysOf(date) % 7
 
   def milliseconds(): Long = {
     val thisComp = getConstructionType(this)
@@ -70,6 +87,7 @@ trait Component extends Ordered[Component] {
   def calcDateTimeDifference(): DateTime = {
     val smDate = DateTime(unix().value)
     val dt = DateTime.now()
+
     if((yearsFromDefault(smDate.year) == 0) && (smDate.month == 0) && (smDate.day == 0)
       && (smDate.h == 0) && (smDate.m == 0) && (smDate.s == 0)) {
       DateTime(dt.year, dt.month, dt.day, dt.h, dt.m, dt.s, smDate.ms)
@@ -103,7 +121,7 @@ trait Component extends Ordered[Component] {
   def firstValidUnit(dt: DateTime, unit: Int): Boolean = {
     val func = Seq[DateTime => Boolean](
       _.year - DefaultYear == 0,
-      _.month == 1,
+      _.month <= 1,
       _.day == 0,
       _.h == 0,
       _.m == 0,
@@ -174,8 +192,9 @@ trait Component extends Ordered[Component] {
   }
 
   def calcOffset(): Component = {
-    if(math.abs(unix().value) <= MillisInDay)
+    if(math.abs(unix().value) < MillisInDay) {
       mostSignificantTime(calcTimeDifference)
+    }
     else getConstructionType(this) match {
       case _: DateTime =>
         mostSignificantDateTime(calcDateTimeDifference())
@@ -241,7 +260,10 @@ trait Component extends Ordered[Component] {
       case (acc, (cur, i)) => acc ++ Seq(acc.last + cur)
     }
     if(month <= 1) 0
-    else accumulatedDays(month - 2)
+    else if ((month >= 2) && this.isLeapYear(Date.now().year))
+      accumulatedDays(month - 2) + 1
+    else
+      accumulatedDays(month - 2)
   }
 
   def daysOfYear(y: Int) : Int = {
@@ -253,7 +275,8 @@ trait Component extends Ordered[Component] {
 
   def daysOf(component: Component) : Int = {
     component match {
-      case d: Date => (d.day).toInt + daysOfMonth(d.month) + daysOfYear(d.year)
+      case d: Date =>
+        d.day.toInt + daysOfMonth(d.month) + daysOfYear(d.year)
       case m: Month => daysOfMonth(m.month)
       case y: Year => daysOfYear(y.year)
     }
