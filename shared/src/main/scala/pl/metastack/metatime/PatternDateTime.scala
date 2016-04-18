@@ -1,13 +1,6 @@
 package pl.metastack.metatime
 
-case class PatternDateTime(parts: Seq[DateTime => String] = Nil) extends Pattern {
-  def string(s: String): PatternDateTime = add(_ => s)
-
-  def dash : PatternDateTime = string("-")
-  def space: PatternDateTime = string(" ")
-  def colon: PatternDateTime = string(":")
-  def comma: PatternDateTime = string(",")
-  def dot  : PatternDateTime = string(".")
+case class PatternDateTime(parts: Seq[DateTime => String] = Nil) extends Pattern[PatternDateTime, DateTime] {
 
   def year(short: Boolean = false): PatternDateTime =
     add(dt =>
@@ -15,13 +8,6 @@ case class PatternDateTime(parts: Seq[DateTime => String] = Nil) extends Pattern
       else        dt.year.toString.drop(2))
 
   def month: PatternDateTime = add(_.month.toString)
-
-  val months = Seq("January", "February", "March",
-    "April", "May", "June", "July", "August",
-    "September", "October", "November", "December")
-
-  val weekDays = Seq("Thursday", "Friday", "Saturday",
-    "Sunday", "Monday", "Tuesday", "Wednesday")
 
   def monthName(short: Boolean = false): PatternDateTime = {
     add(dateTime =>
@@ -32,10 +18,10 @@ case class PatternDateTime(parts: Seq[DateTime => String] = Nil) extends Pattern
 
   def amPm: PatternDateTime =
     add(dt =>
-      if (dt.asInstanceOf[Time].h > 12) "PM"
+      if (dt.h > 12) "PM"
       else           "AM")
 
-  def hour(amPm: Boolean = false): PatternDateTime = add(_.asInstanceOf[Time].h.toString)
+  def hour(amPm: Boolean = false): PatternDateTime = add(_.h.toString)
   def minute: PatternDateTime = add(dt =>
     f"${dt.asInstanceOf[Time].m}%02d".toString)
 
@@ -60,8 +46,6 @@ case class PatternDateTime(parts: Seq[DateTime => String] = Nil) extends Pattern
     add(dateTime =>
       weekDays(dateTime.weekDay() - 1))
   }
-
-  def newLine: PatternDateTime = add(_ => "\n")
 
   def add(item: DateTime => String): PatternDateTime = copy(parts = parts ++ Seq(item))
 

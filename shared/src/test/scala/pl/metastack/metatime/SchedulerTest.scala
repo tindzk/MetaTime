@@ -40,6 +40,7 @@ class SchedulerTest extends AsyncFunSuite {
     val timeBefore = Time.now()
     val p = Promise[Boolean]()
     scheduler.every(Time(0, 0, 1, 0)) {
+      // TODO Check whether every() is called more than once in the same intervals
       p.success(Math.abs((Time.now() - timeBefore).unix().value) >= 1000)
     }
     p.future.map(assert(_))

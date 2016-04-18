@@ -1,13 +1,6 @@
 package pl.metastack.metatime
 
-case class PatternTime(parts: Seq[Time => String] = Nil) {
-  def string(s: String): PatternTime = add(_ => s)
-
-  def dash : PatternTime = string("-")
-  def space: PatternTime = string(" ")
-  def colon: PatternTime = string(":")
-  def comma: PatternTime = string(",")
-  def dot  : PatternTime = string(".")
+case class PatternTime(parts: Seq[Time => String] = Nil) extends Pattern[PatternTime, Time] {
 
   def amPm: PatternTime =
     add(time =>
@@ -30,7 +23,7 @@ case class PatternTime(parts: Seq[Time => String] = Nil) {
     add(_.ms.toString)
   }
 
-  def newLine: PatternTime = add(_ => "\n")
+  //def newLine: PatternTime = add(_ => "\n")
 
   def add(item: Time => String): PatternTime = copy(parts = parts ++ Seq(item))
 
