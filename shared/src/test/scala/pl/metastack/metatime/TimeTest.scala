@@ -28,6 +28,13 @@ class TimeTest extends FunSuite {
     assert(Time(23, 10) > Hour(22))
     assert(Hour(2) > Minute(80))
   }
+  
+  test("plusMinusTime")
+  {
+    assertEquals((Time((Hour(30) + Hour(20)).asInstanceOf[Time])).equals(Time(hour=50)), true)
+    assertEquals((Time((Minute(20) + Second(40)).asInstanceOf[Time])).equals(Time(hour=10, minute=20)), false)
+    assertEquals((Time((Minute(50) - Minute(10)).asInstanceOf[Time])).equals(Time(minute=40)), true)
+  }
 
   test("plusTime") {
     assert(Time(Hour(8) + Hour(2)) == Time(hour = 10))
